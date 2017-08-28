@@ -2,7 +2,6 @@ package jedatarii;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Maze {
@@ -281,31 +280,38 @@ public class Maze {
     }
     
     public static void run(ConsoleUI console) {
-        console.displayTextField();
-        int i1 = 0;
-        int i2 = 0;
-        boolean _continue;
+        console.displayButtons(new String[]{"+1", "+5", "-1", "Go!"});
+        int i = 2;
+        boolean _continue = true;
         do {
             try {
-                console.println("What size of maze do you want?\n(Type two numbers seperated by a comma.)");
-                String[] ints = console.getTextFieldText().split(Pattern.quote(","));
-                i1 = Integer.parseInt(ints[0]);
-                i2 = Integer.parseInt(ints[1]);
-                _continue = false;
-                if(i1 == 1 || i2 == 1) {
-                    console.clear();
-                    console.println("A maze with a side length of 1...\n"
-                            + "...would be too easy.");
-                    console.println("Try something harder.");
-                    _continue = true;
+                console.clear();
+                console.println("What size of maze do you want?");
+                console.println("Click the buttons to increase or decrease the size of the maze.");
+                console.println("Click \"Go!\" when you\'re ready!\n");
+                console.println("Maze size: " + i);
+                String mazeSize = "";
+                for(int j = 0;j<i;j++) {
+                    mazeSize += "██";
                 }
-                if(i1 <= 0 || i2 <= 0) {
-                    console.clear();
-                    console.println("Can you imagine a maze...\n"
-                            + "...with a side length of zero?\n"
-                            + "...or a negative side length?");
-                    console.println("I can\'t either.");
-                    _continue = true;
+                for(int j = 0;j<i;j++) {
+                    console.println(mazeSize);
+                }
+                String chosen = console.getNextButtonPress();
+                switch(chosen) {
+                    case "+1":
+                        if(i < 50) i++;
+                        break;
+                    case "+5":
+                        if(i < 46) i += 5;
+                        else if(i < 50) i = 50;
+                        break;
+                    case "-1":
+                        if(i > 2) i--;
+                        break;
+                    case "Go!":
+                        _continue = false;
+                        break;
                 }
             } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
                 console.clear();
@@ -314,7 +320,7 @@ public class Maze {
             }
         } while (_continue);
         console.clear();
-        (new Maze(i1,i2)).internalRun(console);
+        (new Maze(i,i)).internalRun(console);
     }
     
     private void internalRun(ConsoleUI console) {
@@ -374,6 +380,7 @@ public class Maze {
         } while(!nodesOfMaze[nodesOfMaze.length-1][maze.getExitRow()].containsPlayer);
         console.clear();
         console.println("Congrats! You solved the maze!\n");
+        console.println(toString() + "\n");
     }
     
     private void normalMode() {
@@ -611,7 +618,7 @@ public class Maze {
     
     private Direction whichWay() {
         console.displayButtons(new String[]{"Up", "Down", "Left", "Right"});
-        Direction direction = null;
+        Direction direction;
         console.println("Which way do you want to go?");
         String answer = console.getNextButtonPress();
         direction = Direction.fromString(answer);
@@ -622,7 +629,7 @@ public class Maze {
     
     private Direction whichRelativeWay() {
         console.displayButtons(new String[]{"Forwards", "Backwards", "Left", "Right"});
-        Direction direction = null;
+        Direction direction;
         console.println("Which way do you want to go?");
         String answer = console.getNextButtonPress();
         direction = Direction.fromString(answer);

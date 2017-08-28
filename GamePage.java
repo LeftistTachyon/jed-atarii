@@ -17,19 +17,19 @@ public class GamePage {
     }
 
     public String[] getFirstButtonLabels() {
-        return new String[]{"Back", name, ">"};
+        return new String[]{"Back", "Play", ">"};
     }
 
     public String[] getStandardButtonLabels() {
-        return new String[]{"<", "Back", name, ">"};
+        return new String[]{"<", "Back", "Play", ">"};
     }
 
     public String[] getLastButtonLabels() {
-        return new String[]{"<", "Back", name};
+        return new String[]{"<", "Back", "Play"};
     }
     
     public String[] getSoloButtonLabels() {
-        return new String[]{"Back", name};
+        return new String[]{"Back", "Play"};
     }
 
     @Override

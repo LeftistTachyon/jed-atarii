@@ -170,6 +170,13 @@ public class ConsoleUI extends javax.swing.JFrame {
         }
     }
     
+    public void displayNothing() {
+        for(JButton button:buttons) {
+            button.setVisible(false);
+        }
+        textField.setVisible(false);
+    }
+    
     public static ConsoleUI run() {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
