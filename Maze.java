@@ -292,7 +292,7 @@ public class Maze {
                 console.println("Maze size: " + i);
                 String mazeSize = "";
                 for(int j = 0;j<i;j++) {
-                    mazeSize += "██";
+                    mazeSize += "██"; //█ is Alt+219
                 }
                 for(int j = 0;j<i;j++) {
                     console.println(mazeSize);

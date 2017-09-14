@@ -74,7 +74,7 @@ public class Connect4 {
         
         public void displayBoard(int pointerLocation) {
             for(int i = 0;i<7;i++) {
-                console.print((pointerLocation == i)?"↓":" ");
+                console.print((pointerLocation == i)?"↓":" "); //↓ is Alt+25
                 console.print(" ");
             }
             console.println();

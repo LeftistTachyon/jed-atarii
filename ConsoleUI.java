@@ -3,6 +3,7 @@ package jedatarii;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class ConsoleUI extends javax.swing.JFrame {
     
@@ -24,11 +25,13 @@ public class ConsoleUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
         
+        contentPane = new DrawingPanel(); 
         scrollPane = new JScrollPane();
         textArea = new JTextArea(Integer.MAX_VALUE, Integer.MAX_VALUE);
         textField = new JTextField();
         buttons = new JButton[4];
 
+        setContentPane(contentPane);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Atarii Console");
         
@@ -210,5 +213,51 @@ public class ConsoleUI extends javax.swing.JFrame {
     private JScrollPane scrollPane;
     private JTextArea textArea;
     private JTextField textField;
+    private DrawingPanel contentPane;
     //</editor-fold>
+    
+    class DrawingPanel extends JPanel {
+        private int x;
+        private int y;
+        private String[] commands = {
+                                        "UP",
+                                        "DOWN",
+                                        "LEFT",
+                                        "RIGHT"
+                                    };                      
+
+        private ActionListener panelAction = new ActionListener() {   
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String command = (String) ae.getActionCommand();
+                if (command.equals(commands[0]))
+                    y += 1;             
+                else if (command.equals(commands[1]))
+                    y -= 1;
+                else if (command.equals(commands[2]))
+                    x -= 1;
+                else if (command.equals(commands[3]))
+                    x += 1;
+
+                repaint();  
+            }
+        };
+
+        public DrawingPanel() {
+            x = 0;
+            y = 0;
+
+            for (String command : commands) {
+                super.registerKeyboardAction(panelAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
+            }
+        }
+
+        @Override
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            String displayText = "X : " + x + " and Y : " + y;
+            System.out.println(displayText);
+            g.drawString(displayText, x, y);
+        }
+    }
 }
