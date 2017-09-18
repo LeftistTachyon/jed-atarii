@@ -14,7 +14,7 @@ public class Atarii {
         final WriterFile wf = new WriterFile(errorFile);
         final GamePage[] singlePlayer = new GamePage[]{
             new GamePage("Maze", "Generates a random maze that you can solve. Try solving it!\n"
-                    + "Comes with easy, medium, and hard modes."), 
+                    + "Comes with easy, medium, and hard modes.\n"), 
             new GamePage("Connect 4", "Play against a computer! It\'s quite hard, though.\n"
                     + "Implemented an AI that plays perfectly."), 
             new GamePage("Wild West Showdown", "Go in a shootoff against a computer! With a delay, of course\n"

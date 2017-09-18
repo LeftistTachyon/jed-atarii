@@ -2,7 +2,6 @@ package jedatarii;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.regex.Pattern;
 
 public class Maze {
     private Node[][] nodesOfMaze;
@@ -279,66 +278,64 @@ public class Maze {
         return null;
     }
     
-    public static void run(ConsoleUI console) {
+    public static void run(ConsoleUI console) throws InterruptedException {
         console.displayButtons(new String[]{"+1", "+5", "-1", "Go!"});
         int i = 2;
         boolean _continue = true;
         do {
-            try {
-                console.clear();
-                console.println("What size of maze do you want?");
-                console.println("Click the buttons to increase or decrease the size of the maze.");
-                console.println("Click \"Go!\" when you\'re ready!\n");
-                console.println("Maze size: " + i);
-                String mazeSize = "";
-                for(int j = 0;j<i;j++) {
-                    mazeSize += "██"; //█ is Alt+219
-                }
-                for(int j = 0;j<i;j++) {
-                    console.println(mazeSize);
-                }
-                String chosen = console.getNextButtonPress();
-                switch(chosen) {
-                    case "+1":
-                        if(i < 50) i++;
-                        break;
-                    case "+5":
-                        if(i < 46) i += 5;
-                        else if(i < 50) i = 50;
-                        break;
-                    case "-1":
-                        if(i > 2) i--;
-                        break;
-                    case "Go!":
-                        _continue = false;
-                        break;
-                }
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
-                console.clear();
-                console.println("Please type two numbers seperated by a comma, without spaces.");
-                _continue = true;
+            console.clear();
+            console.println("What size of maze do you want?");
+            console.println("Click the buttons to increase or decrease the size of the maze.");
+            console.println("Click \"Go!\" when you\'re ready!\n");
+            console.println("Maze size: " + i);
+            String mazeSize = "";
+            for(int j = 0;j<i;j++) {
+                mazeSize += "██"; //█ is Alt+219
+            }
+            for(int j = 0;j<i;j++) {
+                console.println(mazeSize);
+            }
+            String chosen = console.getNextButtonPress();
+            switch(chosen) {
+                case "+1":
+                    if(i < 50) i++;
+                    break;
+                case "+5":
+                    if(i < 46) i += 5;
+                    else if(i < 50) i = 50;
+                    break;
+                case "-1":
+                    if(i > 2) i--;
+                    break;
+                case "Go!":
+                    _continue = false;
+                    break;
             }
         } while (_continue);
         console.clear();
         (new Maze(i,i)).internalRun(console);
     }
     
-    private void internalRun(ConsoleUI console) {
+    private void internalRun(ConsoleUI console) throws InterruptedException {
         this.console = console;
         console.displayButtons(new String[]{"Easy", "Normal", "Hard"});
+        console.println("Use your arrow keys to navigate the maze!\n");
         console.println("What difficulty do you want to play?");
         String answer = console.getNextButtonPress();
         if (answer.equalsIgnoreCase("Easy")) {
+            console.displayNothing();
             easyMode();
         } else if (answer.equalsIgnoreCase("Normal")) {
+            console.displayNothing();
             normalMode();
         } else if (answer.equalsIgnoreCase("Hard")) {
+            console.displayNothing();
             console.clear();
             hardMode();
         }
     }
     
-    private void easyMode() {
+    private void easyMode() throws InterruptedException {
         boolean again = false;
         do {
             int[] coordinates = containsPlayer();
@@ -349,7 +346,7 @@ public class Maze {
                 console.clear();
                 console.println(toString());
             }
-            Direction d = whichWay();
+            Direction d = console.getNextDirection(0);
             if(current.wallAt(d)) {
                 console.println("Oops! There's a wall there.");
                 again = true;
@@ -383,7 +380,7 @@ public class Maze {
         console.println(toString() + "\n");
     }
     
-    private void normalMode() {
+    private void normalMode() throws InterruptedException {
         boolean again = false;
         ArrayList<int[]> visitedNodes = new ArrayList<>();
         do {
@@ -396,7 +393,7 @@ public class Maze {
                 console.clear();
                 console.println(toStringWithVisibility(visitedNodes));
             }
-            Direction d = whichWay();
+            Direction d = console.getNextDirection(0);
             if(current.wallAt(d)) {
                 console.println("Oops! There's a wall there.");
                 again = true;
@@ -525,20 +522,29 @@ public class Maze {
             currentCoordinates = containsPlayer();
             if(previousCoordinates != null) {
                 int[] transformation = transformation(previousCoordinates, currentCoordinates);
-                if(transformation[0] == 0) {
-                    if(transformation[1] == 1) {
-                        facing = Direction.EAST;
-                    } else if(transformation[1] == -1) {
-                        facing = Direction.WEST;
-                    } else {
+                switch (transformation[0]) {
+                    case 0:
+                        switch (transformation[1]) {
+                            case 1:
+                                facing = Direction.EAST;
+                                break;
+                            case -1:
+                                facing = Direction.WEST;
+                                break;
+                            default:
+                                facing = Direction.NORTH;
+                                break;
+                        }
+                        break;
+                    case 1:
                         facing = Direction.NORTH;
-                    }
-                } else if(transformation[0] == 1){
-                    facing = Direction.NORTH;
-                } else if(transformation[0] == -1) {
-                    facing = Direction.SOUTH;
-                } else {
-                    facing = Direction.NORTH;
+                        break;
+                    case -1:
+                        facing = Direction.SOUTH;
+                        break;
+                    default:
+                        facing = Direction.NORTH;
+                        break;
                 }
             }
             int x = currentCoordinates[0];
@@ -616,10 +622,11 @@ public class Maze {
         return output;
     }
     
+    @Deprecated
     private Direction whichWay() {
-        console.displayButtons(new String[]{"Up", "Down", "Left", "Right"});
+        console.displayNothing();
         Direction direction;
-        console.println("Which way do you want to go?");
+        console.println("Which way do you want to go? (Use your arrow keys)");
         String answer = console.getNextButtonPress();
         direction = Direction.fromString(answer);
         boolean isNull = direction != null;
@@ -688,7 +695,7 @@ public class Maze {
         }
         
         public Node alignTo(Direction d) {
-            int difference = facing.representation - d.representation;
+            int difference = facing.getRepresentation() - d.getRepresentation();
             switch(difference) {
                 case 3:
                 case -1:
@@ -709,7 +716,7 @@ public class Maze {
         }
         
         public int rotationFrom(Direction d) {
-            int difference = facing.representation - d.representation;
+            int difference = facing.getRepresentation() - d.getRepresentation();
             switch(difference) {
                 case 3:
                 case -1:
@@ -766,114 +773,5 @@ public class Maze {
             }
         }
     }
-    enum Direction {
-        NORTH(0), SOUTH(2), WEST(3), EAST(1);
-        
-        private int representation;
-        
-        private Direction(int representation) {
-            this.representation = representation;
-        }
-        
-        public static Direction fromString(String s) {
-            if(s.equalsIgnoreCase("up")) {
-                return NORTH;
-            } else if(s.equalsIgnoreCase("down")) {
-                return SOUTH;
-            } else if(s.equalsIgnoreCase("left")) {
-                return WEST;
-            } else if(s.equalsIgnoreCase("right")) {
-                return EAST;
-            } else {
-                return null;
-            }
-        }
-        
-        public static Direction relativeString(String s) {
-            if(s.equalsIgnoreCase("forward")) {
-                return NORTH;
-            } else if(s.equalsIgnoreCase("backward")) {
-                return SOUTH;
-            } else if(s.equalsIgnoreCase("left")) {
-                return WEST;
-            } else if(s.equalsIgnoreCase("right")) {
-                return EAST;
-            } else {
-                return null;
-            }
-        }
-        
-        public static Direction fromRepresentation(int representation) {
-            for(Direction d:Direction.values()) {
-                if(d.representation == representation) return d;
-            }
-            return null;
-        }
-
-        public int getRepresentation() {
-            return representation;
-        }
-
-        @Override
-        public String toString() {
-            switch(this) {
-                case EAST:
-                    return "East";
-                case NORTH:
-                    return "North";
-                case SOUTH:
-                    return "South";
-                case WEST:
-                    return "West";
-            }
-            return null;
-        }
-        
-        public String toDirectionString() {
-            switch(this) {
-                case EAST:
-                    return "Right";
-                case NORTH:
-                    return "Up";
-                case SOUTH:
-                    return "Down";
-                case WEST:
-                    return "Left";
-            }
-            return null;
-        }
-        
-        public String toRelativeString() {
-            switch(this) {
-                case EAST:
-                    return "Forward";
-                case NORTH:
-                    return "Backward";
-                case SOUTH:
-                    return "Down";
-                case WEST:
-                    return "Left";
-            }
-            return null;
-        }
-        
-        public Direction rotate(int degrees) {
-            int outputRepresentation = representation;
-            switch(degrees) {
-                case 90:
-                    outputRepresentation += 1;
-                    break;
-                case 180:
-                    outputRepresentation += 2;
-                    break;
-                case -90:
-                    outputRepresentation += 3;
-                    break;
-                default:
-                    return null;
-            }
-            outputRepresentation %= 4;
-            return fromRepresentation(outputRepresentation);
-        }
-    }
+    
 }
