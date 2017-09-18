@@ -7,11 +7,11 @@ public class Connect4 {
     
     private Connect4(){}
     
-    public static void run(ConsoleUI console, int players) {
+    public static void run(ConsoleUI console, int players) throws InterruptedException {
         (new Connect4()).internalRun(console, players);
     }
     
-    public void internalRun(ConsoleUI console, int players) {
+    public void internalRun(ConsoleUI console, int players) throws InterruptedException {
         this.console = console;
         Board b = new Board();
         if(players == 1) {
@@ -106,24 +106,24 @@ public class Connect4 {
         }
 
         //Opponent's turn
-        public void letOpponentMove(){
-            console.displayButtons(new String[]{"<", "Place", ">"});
+        public void letOpponentMove() throws InterruptedException{
+            console.displayNothing();
             int move = 3;
             boolean notFinalMove = true;
             do {
                 console.clear();
                 b.displayBoard(move);
                 console.println("Your move.");
-                String userInput = console.getNextButtonPress();
+                Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
-                    case "<":
+                    case WEST:
                         if(move != 0) move--;
                         break;
-                    case "Place":
-                        if(!b.isLegalMove(move)) console.println("Invalid move.\n\n");
+                    case SOUTH:
+                        if(!b.isLegalMove(move)) console.println("Invalid move.\n");
                         else notFinalMove = false;
                         break;
-                    case ">":
+                    case EAST:
                         if(move != 6) move++;
                         break;
                 }
@@ -381,8 +381,10 @@ public class Connect4 {
             return nextMoveLocation;
         }
 
-        public void playAgainstAIConsole(){
+        public void playAgainstAIConsole() throws InterruptedException{
             console.displayButtons(new String[]{"Yes", "No"});
+            console.println("Use your arrow keys to choose a slot.");
+            console.println("Then press the ENTER key to play that slot.\n");
             console.println("Would you like to play first?");
             String answer = console.getNextButtonPress().trim();
             console.clear();
@@ -431,7 +433,7 @@ public class Connect4 {
         }
     }
     
-    private void twoPlayerGame(Board b) {
+    private void twoPlayerGame(Board b) throws InterruptedException {
         Connect4AI helper = new Connect4AI(b);
         int evaluation = -1;
         int player = 2;
@@ -439,23 +441,23 @@ public class Connect4 {
             player = (player == 1)?2:1;
             console.clear();
             b.displayBoard();
-            console.displayButtons(new String[]{"<", "Place", ">"});
+            console.displayNothing();
             int move = 3;
             boolean notFinalMove = true;
             do {
                 console.clear();
                 b.displayBoard(move);
-                console.println("Player " + player + "'s turn");
-                String userInput = console.getNextButtonPress();
+                console.println("Player " + player + "'s turn\nUse your arrow keys and ENTER to play!");
+                Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
-                    case "<":
+                    case WEST:
                         if(move != 0) move--;
                         break;
-                    case "Place":
+                    case SOUTH:
                         if(!b.isLegalMove(move)) console.println("Invalid move.\n\n");
                         else notFinalMove = false;
                         break;
-                    case ">":
+                    case EAST:
                         if(move != 6) move++;
                         break;
                 }

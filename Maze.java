@@ -286,7 +286,7 @@ public class Maze {
             console.clear();
             console.println("What size of maze do you want?");
             console.println("Click the buttons to increase or decrease the size of the maze.");
-            console.println("Click \"Go!\" when you\'re ready!\n");
+            console.println("Click \"Go!\" (or press ENTER) when you\'re ready!\n");
             console.println("Maze size: " + i);
             String mazeSize = "";
             for(int j = 0;j<i;j++) {
@@ -295,7 +295,7 @@ public class Maze {
             for(int j = 0;j<i;j++) {
                 console.println(mazeSize);
             }
-            String chosen = console.getNextButtonPress();
+            String chosen = console.getNextButtonEnter();
             switch(chosen) {
                 case "+1":
                     if(i < 50) i++;

@@ -10,7 +10,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     
     private String lastButtonName = null;
     private boolean textFieldActivated = false, buttonActivated = false;
-    private int x_0, y_0, x_1, y_1;
+    private int x_0, y_0, x_1, y_1, enter, backspace;
     
     /**
      * Creates new form ConsoleUI
@@ -228,23 +228,35 @@ public class ConsoleUI extends javax.swing.JFrame {
         private ActionListener arrowKeyAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if (command.equals(commands[0]))
-                y_0 += 1;
+                y_0++;
             else if (command.equals(commands[1]))
-                y_0 -= 1;
+                y_0--;
             else if (command.equals(commands[2]))
-                x_0 -= 1;
+                x_0--;
             else if (command.equals(commands[3]))
-                x_0 += 1;
+                x_0++;
             else if (command.equals(commands[4]))
-                y_1 += 1;
+                y_1++;
             else if (command.equals(commands[5]))
-                x_1 -= 1;
+                x_1--;
             else if (command.equals(commands[6]))
-                y_1 -= 1;
+                y_1--;
             else if (command.equals(commands[7]))
-                x_1 += 1;
+                x_1++;
             
             repaint();
+        };
+        private ActionListener enterAction = (ActionEvent ae) -> {
+            String command = (String) ae.getActionCommand();
+            if(command.equals("ENTER")) {
+                enter++;
+            }
+        };
+        private ActionListener backspaceAction = (ActionEvent ae) -> {
+            String command = (String) ae.getActionCommand();
+            if(command.equals("BACK_SPACE")) {
+                backspace++;
+            }
         };
         private ActionListener keyBoardAction = new ActionListener() {
             @Override
@@ -268,17 +280,42 @@ public class ConsoleUI extends javax.swing.JFrame {
             y_0 = 0;
             x_1 = 0;
             y_1 = 0;
+            enter = 0;
 
             for (String command : commands) {
                 super.registerKeyboardAction(arrowKeyAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
             }
+            super.registerKeyboardAction(enterAction, "ENTER", KeyStroke.getKeyStroke("ENTER"), JComponent.WHEN_IN_FOCUSED_WINDOW);
+            super.registerKeyboardAction(backspaceAction, "BACK_SPACE", KeyStroke.getKeyStroke("BACK_SPACE"), JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
         
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            System.out.println("X_1 : " + x_0 + " and Y_1 : " + y_0 + "\tX_2 : " + x_1 + " and Y_2 : " + y_1);
+            System.out.println("X_1 : " + x_0 + " and Y_1 : " + y_0 + "\tX_2 : " + x_1 + " and Y_2 : " + y_1 + "\tEnter : " + enter + "\tBackspace : " + backspace);
         }
+    }
+    
+    public String getNextEnter() throws InterruptedException {
+        int prevEnter = enter;
+        while(prevEnter == enter) {
+            Thread.sleep(100);
+        }
+        return "Go!";
+    }
+    
+    public String getNextButtonEnter() throws InterruptedException {
+        int prevEnter = enter;
+        do {
+            if(prevEnter != enter) {
+                return "Go!";
+            }
+            if(buttonActivated) {
+                buttonActivated = false;
+                return lastButtonName;
+            }
+            Thread.sleep(100);
+        } while(true);
     }
     
     public Direction getNextDirection(int i) throws InterruptedException {
@@ -317,6 +354,71 @@ public class ConsoleUI extends javax.swing.JFrame {
                     } else {
                         return Direction.SOUTH;
                     }
+                }
+                Thread.sleep(100);
+            } while(true);
+        }
+        return null;
+    }
+    
+    public Direction getNextLeftRightEnter() throws InterruptedException {
+        int prevX_0 = x_0, prevEnter = enter;
+        do {
+            if(prevX_0 != x_0) {
+                if(prevX_0 < x_0) {
+                    return Direction.EAST;
+                } else {
+                    return Direction.WEST;
+                }
+            }
+            if(prevEnter != enter) return Direction.SOUTH;
+            Thread.sleep(100);
+        } while(true);
+    }
+    
+    public String getNextGamePageNavigator(int i) throws InterruptedException {
+        int prevBack = backspace, prevEnter = enter;
+        if(i == 0) {
+            int prevX_0 = x_0;
+            do {
+                if(prevX_0 != x_0) {
+                    if(prevX_0 < x_0) {
+                        return ">";
+                    } else {
+                        return "<";
+                    }
+                }
+                if(prevBack != backspace) {
+                    return "Back";
+                }
+                if(prevEnter != enter) {
+                    return "Go!";
+                }
+                if(buttonActivated) {
+                    buttonActivated = false;
+                    return lastButtonName;
+                }
+                Thread.sleep(100);
+            } while(true);
+        } else if(i == 1) {
+            int prevX_1 = x_1;
+            do {
+                if(prevX_1 != x_1) {
+                    if(prevX_1 < x_1) {
+                        return ">";
+                    } else {
+                        return "<";
+                    }
+                }
+                if(prevBack != backspace) {
+                    return "Back";
+                }
+                if(prevEnter != enter) {
+                    return "Go!";
+                }
+                if(buttonActivated) {
+                    buttonActivated = false;
+                    return lastButtonName;
                 }
                 Thread.sleep(100);
             } while(true);

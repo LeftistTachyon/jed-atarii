@@ -62,8 +62,9 @@ public class Atarii {
                             } else {
                                 console.displayButtons(singlePlayer[page].getStandardButtonLabels());
                             }
-                            chosen = console.getNextButtonPress();
+                            chosen = console.getNextGamePageNavigator(0);
                             switch (chosen) {
+                                case "Go!":
                                 case "Play":
                                     switch (singlePlayer[page].getName()) {
                                         case "Maze":
@@ -116,8 +117,9 @@ public class Atarii {
                             } else {
                                 console.displayButtons(dualPlayer[page].getStandardButtonLabels());
                             }
-                            chosen = console.getNextButtonPress();
+                            chosen = console.getNextGamePageNavigator(0);
                             switch (chosen) {
+                                case "Go!":
                                 case "Play":
                                     switch (dualPlayer[page].getName()) {
                                         case "Connect 4":
