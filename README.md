@@ -7,3 +7,4 @@ Current games:
 Connect 4  
 Maze (solving a Maze)  
 Wild West Showdown (a reaction game)
+Pong  
