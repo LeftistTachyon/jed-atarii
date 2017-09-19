@@ -106,7 +106,7 @@ public class ConsoleUI extends javax.swing.JFrame {
         textFieldActivated = true;
         while(textFieldActivated) {
             try {
-                Thread.sleep(250);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Atarii.showException(ex);
             }
@@ -121,7 +121,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     public String getNextButtonPress() {
         while(!buttonActivated) {
             try {
-                Thread.sleep(250);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Atarii.showException(ex);
             }
@@ -133,7 +133,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     public String getTextFieldText() {
         while (!textFieldActivated) {            
             try {
-                Thread.sleep(250);
+                Thread.sleep(100);
             } catch (InterruptedException ex) {
                 Atarii.showException(ex);
             }

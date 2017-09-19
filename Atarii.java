@@ -18,7 +18,9 @@ public class Atarii {
             new GamePage("Connect 4", "Play against a computer! It\'s quite hard, though.\n"
                     + "Implemented an AI that plays perfectly."), 
             new GamePage("Wild West Showdown", "Go in a shootoff against a computer! With a delay, of course\n"
-                    + "You can choose a varying degree of difficulty.")
+                    + "You can choose a varying degree of difficulty."),
+            new GamePage("Pong", "Play Pong against a computer.\n"
+                    + "Implemented a flawed CPU.")
         };
         final GamePage[] dualPlayer = new GamePage[]{
             new GamePage("Connect 4", "Play Connect 4 with a friend.")
@@ -85,6 +87,12 @@ public class Atarii {
                                             justFinishedGame = true;
                                             backwards = false;
                                             break;
+                                        case "Pong":
+                                            console.clear();
+                                            Pong.run(console);
+                                            justFinishedGame = true;
+                                            backwards = false;
+                                            break;
                                     }
                                     break;
                                 case "Back":
@@ -92,11 +100,11 @@ public class Atarii {
                                     break;
                                 case ">":
                                     backwards = false;
-                                    page++;
+                                    if(page != singlePlayer.length-1) page++;
                                     break;
                                 case "<":
                                     backwards = false;
-                                    page--;
+                                    if(page != 0) page--;
                                     break;
                             }
                             if(backwards || justFinishedGame) break;
@@ -135,11 +143,11 @@ public class Atarii {
                                     break;
                                 case ">":
                                     backwards = false;
-                                    page++;
+                                    if(page != singlePlayer.length-1) page++;
                                     break;
                                 case "<":
                                     backwards = false;
-                                    page--;
+                                    if(page != 0) page--;
                                     break;
                             }
                         if(backwards || justFinishedGame) break;
