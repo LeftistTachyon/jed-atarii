@@ -278,7 +278,7 @@ public class Maze {
         return null;
     }
     
-    public static void run(ConsoleUI console) {
+    public static void run(ConsoleUI console) throws InterruptedException {
         console.displayButtons(new String[]{"+1", "+5", "-1", "Go!"});
         int i = 2;
         boolean _continue = true;
@@ -322,7 +322,7 @@ public class Maze {
         (new Maze(i,i)).internalRun(console);
     }
     
-    private void internalRun(ConsoleUI console) {
+    private void internalRun(ConsoleUI console) throws InterruptedException {
         this.console = console;
         console.displayButtons(new String[]{"Easy", "Normal", "Hard"});
         console.println("What difficulty do you want to play?");
@@ -337,8 +337,9 @@ public class Maze {
         }
     }
     
-    private void easyMode() {
+    private void easyMode() throws InterruptedException {
         boolean again = false;
+        console.displayNothing();
         do {
             int[] coordinates = containsPlayer();
             int x = coordinates[0];
@@ -348,7 +349,7 @@ public class Maze {
                 console.clear();
                 console.println(toString());
             }
-            Direction d = whichWay();
+            Direction d = console.getNextDirection(0);
             if(current.wallAt(d)) {
                 console.println("Oops! There's a wall there.");
                 again = true;
@@ -382,8 +383,9 @@ public class Maze {
         console.println(toString() + "\n");
     }
     
-    private void normalMode() {
+    private void normalMode() throws InterruptedException {
         boolean again = false;
+        console.displayNothing();
         ArrayList<int[]> visitedNodes = new ArrayList<>();
         do {
             int[] coordinates = containsPlayer();
@@ -395,7 +397,7 @@ public class Maze {
                 console.clear();
                 console.println(toStringWithVisibility(visitedNodes));
             }
-            Direction d = whichWay();
+            Direction d = console.getNextDirection(0);
             if(current.wallAt(d)) {
                 console.println("Oops! There's a wall there.");
                 again = true;
@@ -687,7 +689,7 @@ public class Maze {
         }
         
         public Node alignTo(Direction d) {
-            int difference = facing.representation - d.representation;
+            int difference = facing.getRepresentation() - d.getRepresentation();
             switch(difference) {
                 case 3:
                 case -1:
@@ -708,7 +710,7 @@ public class Maze {
         }
         
         public int rotationFrom(Direction d) {
-            int difference = facing.representation - d.representation;
+            int difference = facing.getRepresentation() - d.getRepresentation();
             switch(difference) {
                 case 3:
                 case -1:
@@ -763,116 +765,6 @@ public class Maze {
                 default:
                     return null;
             }
-        }
-    }
-    enum Direction {
-        NORTH(0), SOUTH(2), WEST(3), EAST(1);
-        
-        private int representation;
-        
-        private Direction(int representation) {
-            this.representation = representation;
-        }
-        
-        public static Direction fromString(String s) {
-            if(s.equalsIgnoreCase("up")) {
-                return NORTH;
-            } else if(s.equalsIgnoreCase("down")) {
-                return SOUTH;
-            } else if(s.equalsIgnoreCase("left")) {
-                return WEST;
-            } else if(s.equalsIgnoreCase("right")) {
-                return EAST;
-            } else {
-                return null;
-            }
-        }
-        
-        public static Direction relativeString(String s) {
-            if(s.equalsIgnoreCase("forward")) {
-                return NORTH;
-            } else if(s.equalsIgnoreCase("backward")) {
-                return SOUTH;
-            } else if(s.equalsIgnoreCase("left")) {
-                return WEST;
-            } else if(s.equalsIgnoreCase("right")) {
-                return EAST;
-            } else {
-                return null;
-            }
-        }
-        
-        public static Direction fromRepresentation(int representation) {
-            for(Direction d:Direction.values()) {
-                if(d.representation == representation) return d;
-            }
-            return null;
-        }
-
-        public int getRepresentation() {
-            return representation;
-        }
-
-        @Override
-        public String toString() {
-            switch(this) {
-                case EAST:
-                    return "East";
-                case NORTH:
-                    return "North";
-                case SOUTH:
-                    return "South";
-                case WEST:
-                    return "West";
-            }
-            return null;
-        }
-        
-        public String toDirectionString() {
-            switch(this) {
-                case EAST:
-                    return "Right";
-                case NORTH:
-                    return "Up";
-                case SOUTH:
-                    return "Down";
-                case WEST:
-                    return "Left";
-            }
-            return null;
-        }
-        
-        public String toRelativeString() {
-            switch(this) {
-                case EAST:
-                    return "Forward";
-                case NORTH:
-                    return "Backward";
-                case SOUTH:
-                    return "Down";
-                case WEST:
-                    return "Left";
-            }
-            return null;
-        }
-        
-        public Direction rotate(int degrees) {
-            int outputRepresentation = representation;
-            switch(degrees) {
-                case 90:
-                    outputRepresentation += 1;
-                    break;
-                case 180:
-                    outputRepresentation += 2;
-                    break;
-                case -90:
-                    outputRepresentation += 3;
-                    break;
-                default:
-                    return null;
-            }
-            outputRepresentation %= 4;
-            return fromRepresentation(outputRepresentation);
         }
     }
 }

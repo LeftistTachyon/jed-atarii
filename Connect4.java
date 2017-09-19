@@ -7,11 +7,11 @@ public class Connect4 {
     
     private Connect4(){}
     
-    public static void run(ConsoleUI console, int players) {
+    public static void run(ConsoleUI console, int players) throws InterruptedException {
         (new Connect4()).internalRun(console, players);
     }
     
-    public void internalRun(ConsoleUI console, int players) {
+    public void internalRun(ConsoleUI console, int players) throws InterruptedException {
         this.console = console;
         Board b = new Board();
         if(players == 1) {
@@ -106,24 +106,24 @@ public class Connect4 {
         }
 
         //Opponent's turn
-        public void letOpponentMove(){
-            console.displayButtons(new String[]{"<", "Place", ">"});
+        public void letOpponentMove() throws InterruptedException{
+            console.displayNothing();
             int move = 3;
             boolean notFinalMove = true;
             do {
                 console.clear();
                 b.displayBoard(move);
                 console.println("Your move.");
-                String userInput = console.getNextButtonPress();
+                Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
-                    case "<":
+                    case WEST:
                         if(move != 0) move--;
                         break;
-                    case "Place":
+                    case SOUTH:
                         if(!b.isLegalMove(move)) console.println("Invalid move.\n\n");
                         else notFinalMove = false;
                         break;
-                    case ">":
+                    case EAST:
                         if(move != 6) move++;
                         break;
                 }
@@ -146,10 +146,18 @@ public class Connect4 {
 
                     //Checking cells to the right
                     if(j<=3){
-                        for(int k=0;k<4;++k){ 
-                                if(b.board[i][j+k]==1) aiScore++;
-                                else if(b.board[i][j+k]==2) humanScore++;
-                                else break; 
+                        OUTER_3:
+                        for (int k = 0; k<4; ++k) {
+                            switch (b.board[i][j+k]) {
+                                case 1: 
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    humanScore++;
+                                    break;
+                                default:
+                                    break OUTER_3;
+                            }
                         }
                         if(aiScore==4)return 1; else if (humanScore==4)return 2;
                         aiScore = 0; humanScore = 0;
@@ -157,10 +165,18 @@ public class Connect4 {
 
                     //Checking cells up
                     if(i>=3){
-                        for(int k=0;k<4;++k){
-                                if(b.board[i-k][j]==1) aiScore++;
-                                else if(b.board[i-k][j]==2) humanScore++;
-                                else break;
+                        OUTER_2:
+                        for (int k = 0; k<4; ++k) {
+                            switch (b.board[i-k][j]) {
+                                case 1:
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    humanScore++;
+                                    break;
+                                default:
+                                    break OUTER_2;
+                            }
                         }
                         if(aiScore==4)return 1; else if (humanScore==4)return 2;
                         aiScore = 0; humanScore = 0;
@@ -168,10 +184,18 @@ public class Connect4 {
 
                     //Checking diagonal up-right
                     if(j<=3 && i>= 3){
-                        for(int k=0;k<4;++k){
-                            if(b.board[i-k][j+k]==1) aiScore++;
-                            else if(b.board[i-k][j+k]==2) humanScore++;
-                            else break;
+                        OUTER_1:
+                        for (int k = 0; k<4; ++k) {
+                            switch (b.board[i-k][j+k]) {
+                                case 1:
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    humanScore++;
+                                    break;
+                                default:
+                                    break OUTER_1;
+                            }
                         }
                         if(aiScore==4)return 1; else if (humanScore==4)return 2;
                         aiScore = 0; humanScore = 0;
@@ -179,11 +203,19 @@ public class Connect4 {
 
                     //Checking diagonal up-left
                     if(j>=3 && i>=3){
-                        for(int k=0;k<4;++k){
-                            if(b.board[i-k][j-k]==1) aiScore++;
-                            else if(b.board[i-k][j-k]==2) humanScore++;
-                            else break;
-                        } 
+                        OUTER:
+                        for (int k = 0; k<4; ++k) {
+                            switch (b.board[i-k][j-k]) {
+                                case 1:
+                                    aiScore++; 
+                                    break;
+                                case 2:
+                                    humanScore++;
+                                    break;
+                                default:
+                                    break OUTER;
+                            }
+                        }
                         if(aiScore==4)return 1; else if (humanScore==4)return 2;
                         aiScore = 0; humanScore = 0;
                     }  
@@ -200,11 +232,18 @@ public class Connect4 {
 
         int calculateScore(int aiScore, int moreMoves){   
             int moveScore = 4 - moreMoves;
-            if(aiScore==0)return 0;
-            else if(aiScore==1)return 1*moveScore;
-            else if(aiScore==2)return 10*moveScore;
-            else if(aiScore==3)return 100*moveScore;
-            else return 1000;
+            switch (aiScore) {
+                case 0:
+                    return 0;
+                case 1:
+                    return 1*moveScore;
+                case 2:
+                    return 10*moveScore;
+                case 3:
+                    return 100*moveScore;
+                default:
+                    return 1000;
+            }
         }
 
         //Evaluate board favorableness for AI
@@ -220,10 +259,20 @@ public class Connect4 {
                     if(b.board[i][j]==0 || b.board[i][j]==2) continue; 
 
                     if(j<=3){ 
-                        for(k=1;k<4;++k){
-                            if(b.board[i][j+k]==1)aiScore++;
-                            else if(b.board[i][j+k]==2){aiScore=0;blanks = 0;break;}
-                            else blanks++;
+                        OUTER:
+                        for (k=1; k<4; ++k) {
+                            switch (b.board[i][j+k]) {
+                                case 1:
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    aiScore=0;
+                                    blanks = 0;
+                                    break OUTER;
+                                default:
+                                    blanks++;
+                                    break;
+                            }
                         }
 
                         moreMoves = 0; 
@@ -261,10 +310,20 @@ public class Connect4 {
                     }
 
                     if(j>=3){
-                        for(k=1;k<4;++k){
-                            if(b.board[i][j-k]==1)aiScore++;
-                            else if(b.board[i][j-k]==2){aiScore=0; blanks=0;break;}
-                            else blanks++;
+                        OUTER_1:
+                        for (k=1; k<4; ++k) {
+                            switch (b.board[i][j-k]) {
+                                case 1:
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    aiScore=0;
+                                    blanks=0;
+                                    break OUTER_1;
+                                default:
+                                    blanks++;
+                                    break;
+                            }
                         }
                         moreMoves=0;
                         if(blanks>0) 
@@ -282,19 +341,37 @@ public class Connect4 {
                     }
 
                     if(j<=3 && i>=3){
-                        for(k=1;k<4;++k){
-                            if(b.board[i-k][j+k]==1)aiScore++;
-                            else if(b.board[i-k][j+k]==2){aiScore=0;blanks=0;break;}
-                            else blanks++;                        
+                        OUTER_2:
+                        for (k=1; k<4; ++k) {
+                            switch (b.board[i-k][j+k]) {
+                                case 1:                        
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    aiScore=0;
+                                    blanks=0;
+                                    break OUTER_2;
+                                default:
+                                    blanks++;
+                                    break;
+                            }
                         }
                         moreMoves=0;
                         if(blanks>0){
                             for(int c=1;c<4;++c){
                                 int column = j+c, row = i-c;
-                                for(int m=row;m<=5;++m){
-                                    if(b.board[m][column]==0)moreMoves++;
-                                    else if(b.board[m][column]==1);
-                                    else break;
+                                OUTER_3:
+                                for (int m = row; m<=5; ++m) {
+                                    switch (b.board[m][column]) {
+                                        case 0:
+                                            moreMoves++;
+                                            break;
+                                        case 1:
+                                            ;
+                                            break;
+                                        default:
+                                            break OUTER_3;
+                                    }
                                 }
                             } 
                             if(moreMoves!=0) score += calculateScore(aiScore, moreMoves);
@@ -304,19 +381,37 @@ public class Connect4 {
                     }
 
                     if(i>=3 && j>=3){
-                        for(k=1;k<4;++k){
-                            if(b.board[i-k][j-k]==1)aiScore++;
-                            else if(b.board[i-k][j-k]==2){aiScore=0;blanks=0;break;}
-                            else blanks++;                        
+                        OUTER_4:
+                        for (k=1; k<4; ++k) {
+                            switch (b.board[i-k][j-k]) {
+                                case 1:                        
+                                    aiScore++;
+                                    break;
+                                case 2:
+                                    aiScore=0;
+                                    blanks=0;
+                                    break OUTER_4;
+                                default:
+                                    blanks++;
+                                    break;
+                            }
                         }
                         moreMoves=0;
                         if(blanks>0){
                             for(int c=1;c<4;++c){
                                 int column = j-c, row = i-c;
-                                for(int m=row;m<=5;++m){
-                                    if(b.board[m][column]==0)moreMoves++;
-                                    else if(b.board[m][column]==1);
-                                    else break;
+                                OUTER_5:
+                                for (int m = row; m<=5; ++m) {
+                                    switch (b.board[m][column]) {
+                                        case 0:
+                                            moreMoves++;
+                                            break;
+                                        case 1:
+                                            ;
+                                            break;
+                                        default:
+                                            break OUTER_5;
+                                    }
                                 }
                             } 
                             if(moreMoves!=0) score += calculateScore(aiScore, moreMoves);
@@ -334,9 +429,16 @@ public class Connect4 {
             if(beta<=alpha){if(turn == 1) return Integer.MAX_VALUE; else return Integer.MIN_VALUE; }
             int gameResult = gameResult(b);
 
-            if(gameResult==1)return Integer.MAX_VALUE/2;
-            else if(gameResult==2)return Integer.MIN_VALUE/2;
-            else if(gameResult==0)return 0; 
+            switch (gameResult) {
+                case 1:
+                    return Integer.MAX_VALUE/2; 
+                case 2:
+                    return Integer.MIN_VALUE/2;
+                case 0:
+                    return 0;
+                default:
+                    break;
+            }
 
             if(depth==maxDepth)return evaluateBoard(b);
 
@@ -381,7 +483,7 @@ public class Connect4 {
             return nextMoveLocation;
         }
 
-        public void playAgainstAIConsole(){
+        public void playAgainstAIConsole() throws InterruptedException{
             console.displayButtons(new String[]{"Yes", "No"});
             console.println("Would you like to play first?");
             String answer = console.getNextButtonPress().trim();
@@ -431,31 +533,31 @@ public class Connect4 {
         }
     }
     
-    private void twoPlayerGame(Board b) {
+    private void twoPlayerGame(Board b) throws InterruptedException {
         Connect4AI helper = new Connect4AI(b);
         int evaluation = -1;
         int player = 2;
+        console.displayNothing();
         while(evaluation == -1) {
             player = (player == 1)?2:1;
             console.clear();
             b.displayBoard();
-            console.displayButtons(new String[]{"<", "Place", ">"});
             int move = 3;
             boolean notFinalMove = true;
             do {
                 console.clear();
                 b.displayBoard(move);
                 console.println("Player " + player + "'s turn");
-                String userInput = console.getNextButtonPress();
+                Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
-                    case "<":
+                    case WEST:
                         if(move != 0) move--;
                         break;
-                    case "Place":
+                    case SOUTH:
                         if(!b.isLegalMove(move)) console.println("Invalid move.\n\n");
                         else notFinalMove = false;
                         break;
-                    case ">":
+                    case EAST:
                         if(move != 6) move++;
                         break;
                 }
