@@ -113,7 +113,9 @@ public class Connect4 {
             do {
                 console.clear();
                 b.displayBoard(move);
-                console.println("Your move.");
+                console.println("Your move.\n");
+                console.println("Use the LEFT and RIGHT keys to choose which column.");
+                console.println("Press ENTER when you want to place your token.");
                 Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
                     case WEST:
@@ -547,7 +549,9 @@ public class Connect4 {
             do {
                 console.clear();
                 b.displayBoard(move);
-                console.println("Player " + player + "'s turn");
+                console.println("Player " + player + "'s turn\n");
+                console.println("Use the LEFT and RIGHT keys to choose which column.");
+                console.println("Press ENTER when you want to place your token.");
                 Direction userInput = console.getNextLeftRightEnter();
                 switch(userInput) {
                     case WEST:

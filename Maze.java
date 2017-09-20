@@ -526,20 +526,29 @@ public class Maze {
             currentCoordinates = containsPlayer();
             if(previousCoordinates != null) {
                 int[] transformation = transformation(previousCoordinates, currentCoordinates);
-                if(transformation[0] == 0) {
-                    if(transformation[1] == 1) {
-                        facing = Direction.EAST;
-                    } else if(transformation[1] == -1) {
-                        facing = Direction.WEST;
-                    } else {
+                switch (transformation[0]) {
+                    case 0:
+                        switch (transformation[1]) {
+                            case 1:
+                                facing = Direction.EAST;
+                                break;
+                            case -1:
+                                facing = Direction.WEST;
+                                break;
+                            default:
+                                facing = Direction.NORTH;
+                                break;
+                        }
+                        break;
+                    case 1:
                         facing = Direction.NORTH;
-                    }
-                } else if(transformation[0] == 1){
-                    facing = Direction.NORTH;
-                } else if(transformation[0] == -1) {
-                    facing = Direction.SOUTH;
-                } else {
-                    facing = Direction.NORTH;
+                        break;
+                    case -1:
+                        facing = Direction.SOUTH;
+                        break;
+                    default:
+                        facing = Direction.NORTH;
+                        break;
                 }
             }
             int x = currentCoordinates[0];
