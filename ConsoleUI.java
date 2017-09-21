@@ -11,6 +11,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     private String lastButtonName = null;
     private boolean textFieldActivated = false, buttonActivated = false;
     private int x_0, y_0, x_1, y_1, enter, backspace;
+    private LCD lcd = null;
     
     /**
      * Creates new form ConsoleUI
@@ -424,5 +425,20 @@ public class ConsoleUI extends javax.swing.JFrame {
             } while(true);
         }
         return null;
+    }
+
+    public void setLCD(LCD lcd1) {
+        lcd = lcd1;
+        lcd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clear();
+                print(lcd.toString());
+            }
+        });
+    }
+    
+    public void removeLcd() {
+        lcd = null;
     }
 }
