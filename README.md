@@ -6,5 +6,5 @@ All of the code is in Java, and you may branch and suggest new games or improvem
 Current games:  
 Connect 4  
 Maze (solving a Maze)  
-Wild West Showdown (a reaction game)
+Wild West Showdown (a reaction game)  
 Pong  
