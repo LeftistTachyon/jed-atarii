@@ -1,0 +1,9 @@
+
+EXCEPTION 1
+07:41 AM - 09/25/2017
+java.lang.NullPointerException
+	jedatarii.LCD.addActionListener(LCD.java:62)
+	jedatarii.ConsoleUI.setLCD(ConsoleUI.java:432)
+	jedatarii.Pong.internalRun(Pong.java:26)
+	jedatarii.Pong.run(Pong.java:15)
+	jedatarii.Atarii.main(Atarii.java:92)

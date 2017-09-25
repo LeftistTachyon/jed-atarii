@@ -5,10 +5,11 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class LCD {
-    private char[][] lcdScreen = new char[17][59];
+    private char[][] lcdScreen = new char[17][58];
     private ArrayList<ActionListener> listeners;
 
     public LCD() {
+        listeners = new ArrayList<>();
         for(char[] chars:lcdScreen) {
             for(char c:chars) {
                 c = ' ';
@@ -41,6 +42,31 @@ public class LCD {
         for(int y = smallY;y<bigY+1;y++) {
             for(int x = smallX;x<bigX+1;x++) {
                 lcdScreen[y][x] = c;
+            }
+        }
+        fireActionPerformed();
+    }
+    
+    public void clearRect(int x1, int y1, int x2, int y2) {
+        int bigX, smallX;
+        if(x1>x2) {
+            bigX = x1;
+            smallX = x2;
+        } else {
+            bigX = x2;
+            smallX = x1;
+        }
+        int bigY, smallY;
+        if(y1>y2) {
+            bigY = y1;
+            smallY = y2;
+        } else {
+            bigY = y2;
+            smallY = y1;
+        }
+        for(int y = smallY;y<bigY+1;y++) {
+            for(int x = smallX;x<bigX+1;x++) {
+                lcdScreen[y][x] = ' ';
             }
         }
         fireActionPerformed();

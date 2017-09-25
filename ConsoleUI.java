@@ -429,12 +429,9 @@ public class ConsoleUI extends javax.swing.JFrame {
 
     public void setLCD(LCD lcd1) {
         lcd = lcd1;
-        lcd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                clear();
-                print(lcd.toString());
-            }
+        lcd.addActionListener((ActionEvent e) -> {
+            clear();
+            print(lcd.toString());
         });
     }
     
