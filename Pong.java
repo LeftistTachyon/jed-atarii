@@ -32,4 +32,8 @@ public class Pong {
         lcd.fillRect(57, 1, 57, 4, '|');
         //
     }
+    
+    class Ball {
+        double upVelocity, rightVelocity, xLocation, yLocation;
+    }
 }
