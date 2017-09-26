@@ -71,6 +71,10 @@ public class LCD {
         }
         fireActionPerformed();
     }
+    
+    public char charAt(int x, int y) {
+        return lcdScreen[y][x];
+    }
 
     @Override
     public String toString() {

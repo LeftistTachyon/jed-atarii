@@ -21,19 +21,61 @@ public class Pong {
         console.getNextButtonEnter();
         console.clear();
         console.setLCD(lcd);
+        lcd.fillRect(1, 0, 57, 0, '_');
+        lcd.fillRect(1, 16, 57, 16, '_');
+        lcd.fillRect(2, 1, 2, 4, '|');
+        lcd.fillRect(56, 1, 56, 4, '|');
         internalGame();
     }
     
     // "\uD83C\uDF11" is 🌑
-    private void internalGame() {
-        lcd.fillRect(1, 0, 57, 0, '_');
-        lcd.fillRect(1, 16, 57, 16, '_');
-        lcd.fillRect(1, 1, 1, 4, '|');
-        lcd.fillRect(57, 1, 57, 4, '|');
-        //
+    // "\u25CF" is ●
+    private void internalGame() throws InterruptedException {
+        int playerOneScore = 0, playerTwoScore = 0;
+        Ball b = new Ball(28,4);
+        while(playerOneScore < 10 || playerTwoScore < 10) {
+            b.render();
+            Thread.sleep(100);
+        }
+        console.removeLCD();
     }
     
     class Ball {
-        double upVelocity, rightVelocity, xLocation, yLocation;
+        private int downVelocity, rightVelocity, xLocation, yLocation;
+        public Ball(int xL, int yL) {
+            xLocation = xL;
+            yLocation = yL;
+            downVelocity = -1;
+            rightVelocity = 1;
+        }
+
+        public int getRightVelocity() {
+            return rightVelocity;
+        }
+
+        public int getUpVelocity() {
+            return downVelocity;
+        }
+
+        public int getXLocation() {
+            return xLocation;
+        }
+
+        public int getYLocation() {
+            return yLocation;
+        }
+        
+        public void render() {
+            if(lcd.charAt(xLocation-1, yLocation) == '|' || lcd.charAt(xLocation+1, yLocation) == '|') {
+                rightVelocity *= -1;
+            }
+            if(lcd.charAt(xLocation, yLocation+1) == '_' || lcd.charAt(xLocation, yLocation-1) == '_') {
+                downVelocity *= -1;
+            }
+            lcd.setChar(yLocation, xLocation, ' ');
+            xLocation += rightVelocity;
+            yLocation += downVelocity;
+            lcd.setChar(yLocation, xLocation, '\u25CF');
+        }
     }
 }

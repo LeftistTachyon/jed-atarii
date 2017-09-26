@@ -435,7 +435,7 @@ public class ConsoleUI extends javax.swing.JFrame {
         });
     }
     
-    public void removeLcd() {
+    public void removeLCD() {
         lcd = null;
     }
 }
