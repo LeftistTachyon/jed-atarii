@@ -283,39 +283,33 @@ public class Maze {
         int i = 2;
         boolean _continue = true;
         do {
-            try {
-                console.clear();
-                console.println("What size of maze do you want?");
-                console.println("Click the buttons to increase or decrease the size of the maze.");
-                console.println("Click \"Go!\" when you\'re ready!\n");
-                console.println("Maze size: " + i);
-                String mazeSize = "";
-                for(int j = 0;j<i;j++) {
-                    mazeSize += "██"; // █ is Alt+219
-                }
-                for(int j = 0;j<i;j++) {
-                    console.println(mazeSize);
-                }
-                String chosen = console.getNextButtonPress();
-                switch(chosen) {
-                    case "+1":
-                        if(i < 50) i++;
-                        break;
-                    case "+5":
-                        if(i < 46) i += 5;
-                        else if(i < 50) i = 50;
-                        break;
-                    case "-1":
-                        if(i > 2) i--;
-                        break;
-                    case "Go!":
-                        _continue = false;
-                        break;
-                }
-            } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
-                console.clear();
-                console.println("Please type two numbers seperated by a comma, without spaces.");
-                _continue = true;
+            console.clear();
+            console.println("What size of maze do you want?");
+            console.println("Click the buttons to increase or decrease the size of the maze.");
+            console.println("Click \"Go!\" when you\'re ready!\n");
+            console.println("Maze size: " + i);
+            String mazeSize = "";
+            for(int j = 0;j<i;j++) {
+                mazeSize += "██"; // █ is Alt+219
+            }
+            for(int j = 0;j<i;j++) {
+                console.println(mazeSize);
+            }
+            String chosen = console.getNextButtonEnter();
+            switch(chosen) {
+                case "+1":
+                    if(i < 50) i++;
+                    break;
+                case "+5":
+                    if(i < 46) i += 5;
+                    else if(i < 50) i = 50;
+                    break;
+                case "-1":
+                    if(i > 2) i--;
+                    break;
+                case "Go!":
+                    _continue = false;
+                    break;
             }
         } while (_continue);
         console.clear();
@@ -338,26 +332,16 @@ public class Maze {
     }
     
     private void easyMode() throws InterruptedException {
-        boolean again = false;
         console.displayNothing();
         do {
             int[] coordinates = containsPlayer();
             int x = coordinates[0];
             int y = coordinates[1];
             Node current = nodesOfMaze[x][y];
-            if(!again) {
-                console.clear();
-                console.println(toString());
-            }
+            console.clear();
+            console.println(toString());
             Direction d = console.getNextDirection(0);
-            if(current.wallAt(d)) {
-                console.println("Oops! There's a wall there.");
-                again = true;
-            } else if(nodesOfMaze[0][maze.getEntranceRow()].containsPlayer() && d == Direction.WEST) {
-                console.println("Not so fast! You can\'t run away!");
-                again = true;
-            } else {
-                again = false;
+            if(!(nodesOfMaze[0][maze.getEntranceRow()].containsPlayer() && d == Direction.WEST) && !(current.wallAt(d))) {
                 switch(d) {
                     case WEST:
                         current.setContainsPlayer(false);
@@ -384,7 +368,6 @@ public class Maze {
     }
     
     private void normalMode() throws InterruptedException {
-        boolean again = false;
         console.displayNothing();
         ArrayList<int[]> visitedNodes = new ArrayList<>();
         do {
@@ -393,19 +376,10 @@ public class Maze {
             int y = coordinates[1];
             Node current = nodesOfMaze[x][y];
             visitedNodes.add(coordinates);
-            if(!again) {
-                console.clear();
-                console.println(toStringWithVisibility(visitedNodes));
-            }
+            console.clear();
+            console.println(toStringWithVisibility(visitedNodes));
             Direction d = console.getNextDirection(0);
-            if(current.wallAt(d)) {
-                console.println("Oops! There's a wall there.");
-                again = true;
-            } else if(nodesOfMaze[0][maze.getEntranceRow()].containsPlayer() && d == Direction.WEST) {
-                console.println("Not so fast! You can\'t run away!");
-                again = true;
-            } else {
-                again = false;
+            if(!(nodesOfMaze[0][maze.getEntranceRow()].containsPlayer() && d == Direction.WEST) && !(current.wallAt(d))) {
                 switch(d) {
                     case WEST:
                         current.setContainsPlayer(false);
