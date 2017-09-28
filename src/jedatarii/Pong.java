@@ -20,6 +20,7 @@ public class Pong {
         console.println("Press the button below or the ENTER key when you are ready.");
         console.getNextButtonEnter();
         console.clear();
+        console.displayNothing();
         console.setLCD(lcd);
         lcd.fillRect(1, 0, 57, 0, '_');
         lcd.fillRect(1, 16, 57, 16, '_');
@@ -35,6 +36,7 @@ public class Pong {
         Ball b = new Ball(28,4);
         while(playerOneScore < 10 || playerTwoScore < 10) {
             b.render();
+            if(b.isOutOfBounds()) b.reset();
             Thread.sleep(100);
         }
         console.removeLCD();
@@ -42,11 +44,16 @@ public class Pong {
     
     class Ball {
         private int downVelocity, rightVelocity, xLocation, yLocation;
+        private final int xStart, yStart;
+        private boolean outOfBounds;
         public Ball(int xL, int yL) {
             xLocation = xL;
             yLocation = yL;
             downVelocity = -1;
             rightVelocity = 1;
+            outOfBounds = false;
+            xStart = xL;
+            yStart = yL;
         }
 
         public int getRightVelocity() {
@@ -66,6 +73,7 @@ public class Pong {
         }
         
         public void render() {
+            if(outOfBounds) return;
             if(lcd.charAt(xLocation-1, yLocation) == '|' || lcd.charAt(xLocation+1, yLocation) == '|') {
                 rightVelocity *= -1;
             }
@@ -74,8 +82,34 @@ public class Pong {
             }
             lcd.setChar(yLocation, xLocation, ' ');
             xLocation += rightVelocity;
+            System.out.println(xLocation + ", " + yLocation);
             yLocation += downVelocity;
+            if(xLocation == 1 || xLocation == 57) {
+                if(xLocation == 1) {
+                    for(int y = 1;y<16;y++) {
+                        lcd.setChar(y, 0, ' ');
+                    }
+                } else {
+                    for(int y = 1;y<16;y++) {
+                        lcd.setChar(y, 57, ' ');
+                    }
+                }
+                rightVelocity = 0;
+                downVelocity = 0;
+                outOfBounds = true;
+                return;
+            }
             lcd.setChar(yLocation, xLocation, '\u25CF');
+        }
+
+        public boolean isOutOfBounds() {
+            return outOfBounds;
+        }
+        
+        public void reset() {
+            outOfBounds = false;
+            xLocation = xStart;
+            yLocation = yStart;
         }
     }
 }
