@@ -221,28 +221,36 @@ public class ConsoleUI extends javax.swing.JFrame {
     //</editor-fold>
     
     class DrawingPanel extends JPanel {
+        private final HashMap<String, Integer> keyboardCommands;
+        {
+            keyboardCommands = new HashMap<>();
+            for(char c = 'A';c<='Z';c++) {
+                keyboardCommands.put("" + c, 0);
+            }
+        }
+        
         private HashMap<String, Integer> keyMap;
-        private final String[] commands = {
+        private final String[] arrowKeyCommands = {
             "UP","DOWN","LEFT","RIGHT",
             "W","A","S","D"
         };
         private ActionListener arrowKeyAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
-            if (command.equals(commands[0]))
+            if (command.equals(arrowKeyCommands[0]))
                 y_0++;
-            else if (command.equals(commands[1]))
+            else if (command.equals(arrowKeyCommands[1]))
                 y_0--;
-            else if (command.equals(commands[2]))
+            else if (command.equals(arrowKeyCommands[2]))
                 x_0--;
-            else if (command.equals(commands[3]))
+            else if (command.equals(arrowKeyCommands[3]))
                 x_0++;
-            else if (command.equals(commands[4]))
+            else if (command.equals(arrowKeyCommands[4]))
                 y_1++;
-            else if (command.equals(commands[5]))
+            else if (command.equals(arrowKeyCommands[5]))
                 x_1--;
-            else if (command.equals(commands[6]))
+            else if (command.equals(arrowKeyCommands[6]))
                 y_1--;
-            else if (command.equals(commands[7]))
+            else if (command.equals(arrowKeyCommands[7]))
                 x_1++;
             
             repaint();
@@ -259,18 +267,12 @@ public class ConsoleUI extends javax.swing.JFrame {
                 backspace++;
             }
         };
-        private ActionListener keyBoardAction = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                String command = (String) ae.getActionCommand();
-                String[] commandWords = command.split(" ");
-                String commandKey = commandWords[0];
-                if(command.contains("typed")) {
-                    keyMap.put(commandKey, 0);
-                } else if(command.contains("released")) {
-                    
-                } else {
-                    
+        private ActionListener keyBoardAction = (ActionEvent ae) -> {
+            String command = (String) ae.getActionCommand();
+            if(command.length() == 1) {
+                char onlyChar = command.charAt(0);
+                if(onlyChar >= 'A' && onlyChar <= 'Z') {
+                    keyboardCommands.put(command, keyboardCommands.get(command)+1);
                 }
             }
         };
@@ -283,17 +285,28 @@ public class ConsoleUI extends javax.swing.JFrame {
             y_1 = 0;
             enter = 0;
 
-            for (String command : commands) {
+            for(String command:arrowKeyCommands) {
                 super.registerKeyboardAction(arrowKeyAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
+            }
+            for(String command:keyboardCommands.keySet()) {
+                super.registerKeyboardAction(keyBoardAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
             }
             super.registerKeyboardAction(enterAction, "ENTER", KeyStroke.getKeyStroke("ENTER"), JComponent.WHEN_IN_FOCUSED_WINDOW);
             super.registerKeyboardAction(backspaceAction, "BACK_SPACE", KeyStroke.getKeyStroke("BACK_SPACE"), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }
+
+        public HashMap<String, Integer> getKeyboardCommands() {
+            return keyboardCommands;
         }
         
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             System.out.println("X_1 : " + x_0 + " and Y_1 : " + y_0 + "\tX_2 : " + x_1 + " and Y_2 : " + y_1 + "\tEnter : " + enter + "\tBackspace : " + backspace);
+            for(char c = 'A';c<='Z';c++) {
+                System.out.print(c + ":" + keyboardCommands.get("" + c) + " ");
+            }
+            System.out.println();
         }
     }
     
@@ -425,6 +438,21 @@ public class ConsoleUI extends javax.swing.JFrame {
             } while(true);
         }
         return null;
+    }
+    
+    public String getNextKeyboardPress() throws InterruptedException {
+        HashMap<String, Integer> copy = contentPane.getKeyboardCommands();
+        boolean equals;
+        do {
+            equals = copy.entrySet().equals(contentPane.getKeyboardCommands().entrySet());
+            if(!equals) {
+                for(String s:copy.keySet()) {
+                    if(!copy.get(s).equals(contentPane.getKeyboardCommands().get(s))) return s;
+                }
+                return "";
+            }
+            Thread.sleep(100);
+        } while(true);
     }
 
     public void setLCD(LCD lcd1) {

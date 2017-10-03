@@ -33,10 +33,18 @@ public class Pong {
     // "\u25CF" is ●
     private void internalGame() throws InterruptedException {
         int playerOneScore = 0, playerTwoScore = 0;
-        Ball b = new Ball(28,4);
+        Ball b = new Ball(28,8);
         while(playerOneScore < 10 || playerTwoScore < 10) {
             b.render();
-            if(b.isOutOfBounds()) b.reset();
+            if(b.isOutOfBounds()) {
+                System.out.println("X location: " + b.getXLocation() + "\n\n\n\n\n\n\n\n\n\n\n\n\n");
+                if(b.getXLocation() == 57) {
+                    playerTwoScore++;
+                } else if(b.getXLocation() == 1) {
+                    playerOneScore++;
+                }
+                b.reset();
+            }
             Thread.sleep(100);
         }
         console.removeLCD();
