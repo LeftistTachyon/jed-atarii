@@ -20,7 +20,9 @@ public class Atarii {
             new GamePage("Wild West Showdown", "Go in a shootoff against a computer! With a delay, of course\n"
                     + "You can choose a varying degree of difficulty."),
             new GamePage("Pong", "Play Pong against a computer.\n"
-                    + "Implemented a flawed CPU.")
+                    + "Implemented a flawed CPU."), 
+            new GamePage("Typist", "Type as fast as you can!\n"
+                    + "A typing game that records your typing speed.")
         };
         final GamePage[] dualPlayer = new GamePage[]{
             new GamePage("Connect 4", "Play Connect 4 with a friend.")
@@ -90,6 +92,12 @@ public class Atarii {
                                         case "Pong":
                                             console.clear();
                                             Pong.run(console);
+                                            justFinishedGame = true;
+                                            backwards = false;
+                                            break;
+                                        case "Typist":
+                                            console.clear();
+                                            Typist.run(console);
                                             justFinishedGame = true;
                                             backwards = false;
                                             break;

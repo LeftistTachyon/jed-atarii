@@ -441,17 +441,15 @@ public class ConsoleUI extends javax.swing.JFrame {
     }
     
     public String getNextKeyboardPress() throws InterruptedException {
-        HashMap<String, Integer> copy = contentPane.getKeyboardCommands();
-        boolean equals;
+        HashMap<String, Integer> copy = new HashMap<>(contentPane.getKeyboardCommands());
         do {
-            equals = copy.entrySet().equals(contentPane.getKeyboardCommands().entrySet());
-            if(!equals) {
+            System.out.println(copy.equals(contentPane.getKeyboardCommands()));
+            if(!copy.equals(contentPane.getKeyboardCommands())) {
                 for(String s:copy.keySet()) {
                     if(!copy.get(s).equals(contentPane.getKeyboardCommands().get(s))) return s;
                 }
-                return "";
             }
-            Thread.sleep(100);
+            Thread.sleep(10);
         } while(true);
     }
 
