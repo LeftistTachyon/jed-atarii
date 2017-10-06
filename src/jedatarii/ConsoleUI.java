@@ -227,6 +227,9 @@ public class ConsoleUI extends javax.swing.JFrame {
             for(char c = 'A';c<='Z';c++) {
                 keyboardCommands.put("" + c, 0);
             }
+            for(char c = '0';c<='9';c++) {
+                keyboardCommands.put("" + c, 0);
+            }
         }
         
         private HashMap<String, Integer> keyMap;
@@ -271,7 +274,7 @@ public class ConsoleUI extends javax.swing.JFrame {
             String command = (String) ae.getActionCommand();
             if(command.length() == 1) {
                 char onlyChar = command.charAt(0);
-                if(onlyChar >= 'A' && onlyChar <= 'Z') {
+                if((onlyChar >= 'A' && onlyChar <= 'Z')||(onlyChar >= '0' && onlyChar <= '9')) {
                     keyboardCommands.put(command, keyboardCommands.get(command)+1);
                 }
             }
@@ -304,6 +307,10 @@ public class ConsoleUI extends javax.swing.JFrame {
             super.paintComponent(g);
             System.out.println("X_1 : " + x_0 + " and Y_1 : " + y_0 + "\tX_2 : " + x_1 + " and Y_2 : " + y_1 + "\tEnter : " + enter + "\tBackspace : " + backspace);
             for(char c = 'A';c<='Z';c++) {
+                System.out.print(c + ":" + keyboardCommands.get("" + c) + " ");
+            }
+            System.out.println();
+            for(char c = '0';c<='9';c++) {
                 System.out.print(c + ":" + keyboardCommands.get("" + c) + " ");
             }
             System.out.println();
@@ -443,7 +450,6 @@ public class ConsoleUI extends javax.swing.JFrame {
     public String getNextKeyboardPress() throws InterruptedException {
         HashMap<String, Integer> copy = new HashMap<>(contentPane.getKeyboardCommands());
         do {
-            System.out.println(copy.equals(contentPane.getKeyboardCommands()));
             if(!copy.equals(contentPane.getKeyboardCommands())) {
                 for(String s:copy.keySet()) {
                     if(!copy.get(s).equals(contentPane.getKeyboardCommands().get(s))) return s;
