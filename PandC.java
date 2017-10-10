@@ -1,9 +1,48 @@
 package producerconsumer;
 
 class Market {
-    int n;
-    boolean valSet = false;
-    synchronized int get() {
+    private int n;
+    private boolean valSet = false;
+    private Producer producer;
+    private Consumer consumer;
+    
+    public Market() {}
+    
+    public Market(Producer p, Consumer c) {
+        consumer = c;
+        producer = p;
+    }
+
+    public Consumer getConsumer() {
+        return consumer;
+    }
+
+    public Producer getProducer() {
+        return producer;
+    }
+
+    public void setConsumer(Consumer c) {
+        this.consumer = c;
+    }
+
+    public void setProducer(Producer p) {
+        this.producer = p;
+    }
+    
+    public void startProducer() {
+        producer.start();
+    }
+    
+    public void startConsumer() {
+        consumer.start();
+    }
+    
+    public void startAll() {
+        producer.start();
+        consumer.start();
+    }
+    
+    public synchronized int get() {
         if(!valSet) {
             try {
                 wait();
@@ -17,7 +56,7 @@ class Market {
         return n;
     }
     
-    synchronized void put(int n) {
+    public synchronized void put(int n) {
         if(valSet) {
             try {
                 wait();
@@ -30,61 +69,73 @@ class Market {
         System.out.println("Put: " + n);
         notify();
     }
-}
+    
+    abstract class Producer implements Runnable {
+        private Market m;
+        private Thread t;
+        protected volatile boolean stop = false;
 
-abstract class Producer implements Runnable {
-    Market m;
-    Thread t;
-    
-    public Producer(Market m) {
-        this.m = m;
-        t = new Thread(this, "Producer");
-    }
-    
-    public void start() {
-        t.start();
-    }
-    
-    @Override
-    public abstract void run();
-}
+        public Producer(Market m) {
+            this.m = m;
+            t = new Thread(this, "Producer");
+        }
 
-abstract class Consumer implements Runnable {
-    Market m;
-    Thread t;
-    public Consumer(Market m) {
-        this.m = m;
-        t = new Thread(this, "Consumer");
-    }
-    
-    public void start() {
-        t.start();
-    }
-    
-    @Override
-    public abstract void run();
-}
+        public void start() {
+            stop = false;
+            t.start();
+        }
+        
+        public void stop() {
+            stop = true;
+        }
 
+        @Override
+        public abstract void run();
+    }
+
+    abstract class Consumer implements Runnable {
+        private Market m;
+        private Thread t;
+        protected volatile boolean stop = false;
+        
+        public Consumer(Market m) {
+            this.m = m;
+            t = new Thread(this, "Consumer");
+        }
+
+        public void start() {
+            stop = false;
+            t.start();
+        }
+        
+        public void stop() {
+            stop = true;
+        }
+
+        @Override
+        public abstract void run();
+    }
+}
 public class PandC {
     public static void main(String[] args) {
         Market m = new Market();
-        new Producer(m) {
+        m.setConsumer(m.new Consumer(m) {
             @Override
             public void run() {
-                int i = 0;
-                while(true) {
-                    m.put(i++);
-                }
-            }
-        }.start();
-        new Consumer(m) {
-            @Override
-            public void run() {
-                while(true) {
+                while(!stop) {
                     m.get();
                 }
             }
-        }.start();
-        System.out.println("Stop by pressing Crtl-C");
+        });
+        m.setProducer(m.new Producer(m) {
+            @Override
+            public void run() {
+                int i = 0;
+                while(!stop) {
+                    m.put(i++);
+                }
+            }
+        });
+        m.startAll();
     }
 }
