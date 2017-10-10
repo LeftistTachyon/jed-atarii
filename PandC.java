@@ -32,7 +32,7 @@ class Market {
     }
 }
 
-class Producer implements Runnable {
+abstract class Producer implements Runnable {
     Market m;
     Thread t;
     
@@ -46,15 +46,10 @@ class Producer implements Runnable {
     }
     
     @Override
-    public void run() {
-        int i = 0;
-        while(true) {
-            m.put(i++);
-        }
-    }
+    public abstract void run();
 }
 
-class Consumer implements Runnable {
+abstract class Consumer implements Runnable {
     Market m;
     Thread t;
     public Consumer(Market m) {
@@ -67,18 +62,29 @@ class Consumer implements Runnable {
     }
     
     @Override
-    public void run() {
-        while(true) {
-            m.get();
-        }
-    }
+    public abstract void run();
 }
 
 public class PandC {
     public static void main(String[] args) {
         Market m = new Market();
-        new Producer(m).start();
-        new Consumer(m).start();
+        new Producer(m) {
+            @Override
+            public void run() {
+                int i = 0;
+                while(true) {
+                    m.put(i++);
+                }
+            }
+        }.start();
+        new Consumer(m) {
+            @Override
+            public void run() {
+                while(true) {
+                    m.get();
+                }
+            }
+        }.start();
         System.out.println("Stop by pressing Crtl-C");
     }
 }
