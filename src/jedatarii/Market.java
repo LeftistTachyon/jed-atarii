@@ -1,7 +1,7 @@
 package jedatarii;
 
-public class Market {
-    private int n;
+public class Market<V> {
+    private V v;
     private boolean valSet = false;
     private Producer producer;
     private Consumer consumer;
@@ -42,7 +42,7 @@ public class Market {
         consumer.start();
     }
     
-    public synchronized int get() {
+    public synchronized V get() {
         if(!valSet) {
             try {
                 wait();
@@ -50,13 +50,13 @@ public class Market {
                 System.out.println("Interrupted");
             }
         }
-        System.out.println("Got: " + n);
+        System.out.println("Got: " + v);
         valSet = false;
         notify();
-        return n;
+        return v;
     }
     
-    public synchronized void put(int n) {
+    public synchronized void put(V v) {
         if(valSet) {
             try {
                 wait();
@@ -64,9 +64,9 @@ public class Market {
                 System.out.println("Interrupted.");
             }
         }
-        this.n = n;
+        this.v = v;
         valSet = true;
-        System.out.println("Put: " + n);
+        System.out.println("Put: " + v);
         notify();
     }
     
