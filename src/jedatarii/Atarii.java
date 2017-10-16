@@ -163,8 +163,6 @@ public class Atarii {
                         break;
                     case "Exit Atarii":
                         _continue = false;
-                        console.displayTextField();
-                        Thread.sleep(3000);
                         console.dispose();
                         break;
                 }

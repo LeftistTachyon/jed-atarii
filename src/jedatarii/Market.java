@@ -13,13 +13,13 @@ public class Market<V> {
         producer = p;
     }
 
-    public Consumer getConsumer() {
+    /*public Consumer getConsumer() {
         return consumer;
     }
 
     public Producer getProducer() {
         return producer;
-    }
+    }*/
 
     public void setConsumer(Consumer c) {
         this.consumer = c;
