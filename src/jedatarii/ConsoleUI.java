@@ -12,6 +12,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     private boolean textFieldActivated = false, buttonActivated = false;
     private int x_0, y_0, x_1, y_1, enter, backspace;
     private LCD lcd = null;
+    private Market<String> buttonMarket = new Market<>(), textFieldMarket = new Market<>();
     
     /**
      * Creates new form ConsoleUI
@@ -22,7 +23,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     
     /** This method is called from within the constructor to
      * initialize the form.
-     * WARNING: Do NOT modify this code (unless you know what you're doing).
+     * WARNING: Do NOT modify this code <strike>(unless you know what you're doing)</strike>.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
@@ -231,51 +232,76 @@ public class ConsoleUI extends javax.swing.JFrame {
                 keyboardCommands.put("" + c, 0);
             }
         }
-        
         private HashMap<String, Integer> keyMap;
+        
+        private boolean arrowKeyListening = false;
         private final String[] arrowKeyCommands = {
             "UP","DOWN","LEFT","RIGHT",
             "W","A","S","D"
         };
+        private Market<Integer>[] arrowKeyMarket = new Market[] {
+            new Market(), new Market(), new Market(), new Market()
+        };
         private ActionListener arrowKeyAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
-            if (command.equals(arrowKeyCommands[0]))
+            if (command.equals(arrowKeyCommands[0])) {
                 y_0++;
-            else if (command.equals(arrowKeyCommands[1]))
+                if(arrowKeyListening) arrowKeyMarket[1].put(y_0);
+            } else if (command.equals(arrowKeyCommands[1])) {
                 y_0--;
-            else if (command.equals(arrowKeyCommands[2]))
+                if(arrowKeyListening) arrowKeyMarket[1].put(y_0);
+            } else if (command.equals(arrowKeyCommands[2])) {
                 x_0--;
-            else if (command.equals(arrowKeyCommands[3]))
+                if(arrowKeyListening) arrowKeyMarket[0].put(x_0);
+            } else if (command.equals(arrowKeyCommands[3])) {
                 x_0++;
-            else if (command.equals(arrowKeyCommands[4]))
+                if(arrowKeyListening) arrowKeyMarket[0].put(x_0);
+            } else if (command.equals(arrowKeyCommands[4])) {
                 y_1++;
-            else if (command.equals(arrowKeyCommands[5]))
+                if(arrowKeyListening) arrowKeyMarket[3].put(y_1);
+            } else if (command.equals(arrowKeyCommands[5])) {
                 x_1--;
-            else if (command.equals(arrowKeyCommands[6]))
+                if(arrowKeyListening) arrowKeyMarket[2].put(x_1);
+            } else if (command.equals(arrowKeyCommands[6])) {
                 y_1--;
-            else if (command.equals(arrowKeyCommands[7]))
+                if(arrowKeyListening) arrowKeyMarket[3].put(y_1);
+            } else if (command.equals(arrowKeyCommands[7])) {
                 x_1++;
+                if(arrowKeyListening) arrowKeyMarket[2].put(x_1);
+            }
             
             repaint();
         };
+        
+        private boolean enterKeyListening = false;
+        private Market<String> enterKeyMarket = new Market<>();
         private ActionListener enterAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if(command.equals("ENTER")) {
                 enter++;
             }
+            if(enterKeyListening) enterKeyMarket.put("Go!");
         };
+        
+        private boolean backspaceListening = false;
+        private Market<String> backspaceKeyMarket = new Market<>();
         private ActionListener backspaceAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if(command.equals("BACK_SPACE")) {
                 backspace++;
             }
+            if(backspaceListening) backspaceKeyMarket.put("Back");
         };
+        
+        private boolean keyBoardListening = false;
+        private Market<Integer>[] keyBoardMarket = new Market[keyboardCommands.keySet().size()];
         private ActionListener keyBoardAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if(command.length() == 1) {
                 char onlyChar = command.charAt(0);
                 if((onlyChar >= 'A' && onlyChar <= 'Z')||(onlyChar >= '0' && onlyChar <= '9')) {
                     keyboardCommands.put(command, keyboardCommands.get(command)+1);
+                    if(keyBoardListening) keyBoardMarket[onlyChar-'A'].put(keyboardCommands.get(command));
                 }
             }
         };
@@ -287,6 +313,9 @@ public class ConsoleUI extends javax.swing.JFrame {
             x_1 = 0;
             y_1 = 0;
             enter = 0;
+            for(int i = 0;i<keyBoardMarket.length;i++) {
+                keyBoardMarket[i] = new Market();
+            }
 
             for(String command:arrowKeyCommands) {
                 super.registerKeyboardAction(arrowKeyAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
