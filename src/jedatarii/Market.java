@@ -2,7 +2,7 @@ package jedatarii;
 
 public class Market<V> {
     private V v = null;
-    private boolean valSet = false;
+    protected boolean valSet = false;
     
     public Market() {}
     

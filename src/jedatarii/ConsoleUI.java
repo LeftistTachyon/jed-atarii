@@ -294,14 +294,14 @@ public class ConsoleUI extends javax.swing.JFrame {
         };
         
         private boolean keyBoardListening = false;
-        private Market<Integer>[] keyBoardMarket = new Market[keyboardCommands.keySet().size()];
+        private QueuedMarket<String> keyBoardMarket = new QueuedMarket();
         private ActionListener keyBoardAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if(command.length() == 1) {
                 char onlyChar = command.charAt(0);
                 if((onlyChar >= 'A' && onlyChar <= 'Z')||(onlyChar >= '0' && onlyChar <= '9')) {
                     keyboardCommands.put(command, keyboardCommands.get(command)+1);
-                    if(keyBoardListening) keyBoardMarket[onlyChar-'A'].put(keyboardCommands.get(command));
+                    if(keyBoardListening) keyBoardMarket.put(command);
                 }
             }
         };
@@ -313,9 +313,6 @@ public class ConsoleUI extends javax.swing.JFrame {
             x_1 = 0;
             y_1 = 0;
             enter = 0;
-            for(int i = 0;i<keyBoardMarket.length;i++) {
-                keyBoardMarket[i] = new Market();
-            }
 
             for(String command:arrowKeyCommands) {
                 super.registerKeyboardAction(arrowKeyAction, command, KeyStroke.getKeyStroke(command), JComponent.WHEN_IN_FOCUSED_WINDOW);
