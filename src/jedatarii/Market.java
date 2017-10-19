@@ -35,4 +35,8 @@ public class Market<V> {
         System.out.println("Put: " + v);
         notify();
     }
+
+    public boolean isValSet() {
+        return valSet;
+    }
 }

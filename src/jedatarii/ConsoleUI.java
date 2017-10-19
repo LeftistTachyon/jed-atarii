@@ -21,6 +21,34 @@ public class ConsoleUI extends javax.swing.JFrame {
         initComponents();
     }
     
+    public static ConsoleUI run() {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            UIManager.LookAndFeelInfo[] installedLookAndFeels=UIManager.getInstalledLookAndFeels();
+            for (UIManager.LookAndFeelInfo installedLookAndFeel : installedLookAndFeels) {
+                if ("Nimbus".equals(installedLookAndFeel.getName())) {
+                    UIManager.setLookAndFeel(installedLookAndFeel.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Atarii.showException(ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        ConsoleUI output = new ConsoleUI();
+        EventQueue.invokeLater(() -> {
+            output.setResizable(false);
+            output.setVisible(true);
+        });
+        return output;
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code <strike>(unless you know what you're doing)</strike>.
@@ -101,11 +129,13 @@ public class ConsoleUI extends javax.swing.JFrame {
     
     private void buttonPressed(ActionEvent ae) {
         lastButtonName = ((JButton)(ae.getSource())).getText();
-        buttonActivated = true;
+        //buttonActivated = true;
+        buttonMarket.put(lastButtonName);
     }
     
     private void textFieldActivated(ActionEvent ae) {
         textFieldActivated = true;
+        textFieldMarket.put(textField.getText());
         while(textFieldActivated) {
             try {
                 Thread.sleep(100);
@@ -121,7 +151,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     }
     
     public String getNextButtonPress() {
-        while(!buttonActivated) {
+        /*while(!buttonActivated) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -129,11 +159,12 @@ public class ConsoleUI extends javax.swing.JFrame {
             }
         }
         buttonActivated = false;
-        return lastButtonName;
+        return lastButtonName;*/
+        return buttonMarket.get();
     }
     
     public String getTextFieldText() {
-        while (!textFieldActivated) {            
+        /*while (!textFieldActivated) {            
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
@@ -141,7 +172,10 @@ public class ConsoleUI extends javax.swing.JFrame {
             }
         }
         textFieldActivated = false;
-        return textField.getText();
+        return textField.getText();*/
+        String output = textFieldMarket.get();
+        textFieldActivated = false;
+        return output;
     }
     
     public void println(String s) {
@@ -183,34 +217,6 @@ public class ConsoleUI extends javax.swing.JFrame {
             button.setVisible(false);
         }
         textField.setVisible(false);
-    }
-    
-    public static ConsoleUI run() {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            UIManager.LookAndFeelInfo[] installedLookAndFeels=UIManager.getInstalledLookAndFeels();
-            for (UIManager.LookAndFeelInfo installedLookAndFeel : installedLookAndFeels) {
-                if ("Nimbus".equals(installedLookAndFeel.getName())) {
-                   UIManager.setLookAndFeel(installedLookAndFeel.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
-            Atarii.showException(ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        ConsoleUI consoleUI = new ConsoleUI();
-        EventQueue.invokeLater(() -> {
-            consoleUI.setResizable(false);
-            consoleUI.setVisible(true);
-        });
-        return consoleUI;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Variables">
@@ -344,15 +350,16 @@ public class ConsoleUI extends javax.swing.JFrame {
     }
     
     public String getNextEnter() throws InterruptedException {
-        int prevEnter = enter;
+        /*int prevEnter = enter;
         while(prevEnter == enter) {
             Thread.sleep(100);
         }
-        return "Go!";
+        return "Go!";*/
+        return contentPane.enterKeyMarket.get();
     }
     
     public String getNextButtonEnter() throws InterruptedException {
-        int prevEnter = enter;
+        /*int prevEnter = enter;
         do {
             if(prevEnter != enter) {
                 return "Go!";
@@ -361,6 +368,13 @@ public class ConsoleUI extends javax.swing.JFrame {
                 buttonActivated = false;
                 return lastButtonName;
             }
+            Thread.sleep(100);
+        } while(true);*/
+        do {
+            if(contentPane.enterKeyMarket.isValSet())
+                return contentPane.enterKeyMarket.get();
+            if(buttonMarket.isValSet()) 
+                return buttonMarket.get();
             Thread.sleep(100);
         } while(true);
     }
@@ -385,6 +399,10 @@ public class ConsoleUI extends javax.swing.JFrame {
                 }
                 Thread.sleep(100);
             } while(true);
+            /*do {
+                
+                Thread.sleep(100);
+            } while(true);*/
         } else if(i == 1) {
             int prevX_1 = x_1;
             int prevY_1 = y_1;
@@ -474,7 +492,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     }
     
     public String getNextKeyboardPress() throws InterruptedException {
-        HashMap<String, Integer> copy = new HashMap<>(contentPane.getKeyboardCommands());
+        /*HashMap<String, Integer> copy = new HashMap<>(contentPane.getKeyboardCommands());
         do {
             if(!copy.equals(contentPane.getKeyboardCommands())) {
                 for(String s:copy.keySet()) {
@@ -482,7 +500,8 @@ public class ConsoleUI extends javax.swing.JFrame {
                 }
             }
             Thread.sleep(10);
-        } while(true);
+        } while(true);*/
+        return contentPane.keyBoardMarket.get();
     }
 
     public void setLCD(LCD lcd1) {
