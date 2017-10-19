@@ -400,7 +400,11 @@ public class ConsoleUI extends javax.swing.JFrame {
                 Thread.sleep(100);
             } while(true);
             /*do {
-                
+                if(contentPane.arrowKeyMarket[0].isValSet()) {
+                    if(contentPane.arrowKeyMarket[0].get())
+                } else if(contentPane.arrowKeyMarket[1].isValSet()) {
+                    
+                }
                 Thread.sleep(100);
             } while(true);*/
         } else if(i == 1) {
