@@ -13,6 +13,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     private int x_0, y_0, x_1, y_1, enter, backspace;
     private LCD lcd = null;
     private Market<String> buttonMarket = new Market<>(), textFieldMarket = new Market<>();
+    private boolean buttonListening = false, textFieldListening = false;
     
     /**
      * Creates new form ConsoleUI
@@ -130,12 +131,12 @@ public class ConsoleUI extends javax.swing.JFrame {
     private void buttonPressed(ActionEvent ae) {
         lastButtonName = ((JButton)(ae.getSource())).getText();
         //buttonActivated = true;
-        buttonMarket.put(lastButtonName);
+        if(buttonListening) buttonMarket.put(lastButtonName);
     }
     
     private void textFieldActivated(ActionEvent ae) {
         textFieldActivated = true;
-        textFieldMarket.put(textField.getText());
+        if(textFieldListening) textFieldMarket.put(textField.getText());
         while(textFieldActivated) {
             try {
                 Thread.sleep(100);
@@ -160,7 +161,10 @@ public class ConsoleUI extends javax.swing.JFrame {
         }
         buttonActivated = false;
         return lastButtonName;*/
-        return buttonMarket.get();
+        buttonListening = true;
+        String get = buttonMarket.get();
+        buttonListening = false;
+        return get;
     }
     
     public String getTextFieldText() {
@@ -173,8 +177,10 @@ public class ConsoleUI extends javax.swing.JFrame {
         }
         textFieldActivated = false;
         return textField.getText();*/
+        textFieldListening = true;
         String output = textFieldMarket.get();
         textFieldActivated = false;
+        textFieldListening = false;
         return output;
     }
     
@@ -240,40 +246,40 @@ public class ConsoleUI extends javax.swing.JFrame {
         }
         private HashMap<String, Integer> keyMap;
         
-        private boolean arrowKeyListening = false;
+        private boolean[] arrowKeyListening = new boolean[]{false, false, false, false};
         private final String[] arrowKeyCommands = {
             "UP","DOWN","LEFT","RIGHT",
             "W","A","S","D"
         };
-        private Market<Integer>[] arrowKeyMarket = new Market[] {
-            new Market(), new Market(), new Market(), new Market()
+        private Market<Direction>[] arrowKeyMarket = new Market[] {
+            new Market<>(), new Market<>(), new Market<>(), new Market<>()
         };
         private ActionListener arrowKeyAction = (ActionEvent ae) -> {
             String command = (String) ae.getActionCommand();
             if (command.equals(arrowKeyCommands[0])) {
                 y_0++;
-                if(arrowKeyListening) arrowKeyMarket[1].put(y_0);
+                if(arrowKeyListening[1]) arrowKeyMarket[1].put(Direction.SOUTH);
             } else if (command.equals(arrowKeyCommands[1])) {
                 y_0--;
-                if(arrowKeyListening) arrowKeyMarket[1].put(y_0);
+                if(arrowKeyListening[1]) arrowKeyMarket[1].put(Direction.NORTH);
             } else if (command.equals(arrowKeyCommands[2])) {
                 x_0--;
-                if(arrowKeyListening) arrowKeyMarket[0].put(x_0);
+                if(arrowKeyListening[0]) arrowKeyMarket[0].put(Direction.EAST);
             } else if (command.equals(arrowKeyCommands[3])) {
                 x_0++;
-                if(arrowKeyListening) arrowKeyMarket[0].put(x_0);
+                if(arrowKeyListening[0]) arrowKeyMarket[0].put(Direction.WEST);
             } else if (command.equals(arrowKeyCommands[4])) {
                 y_1++;
-                if(arrowKeyListening) arrowKeyMarket[3].put(y_1);
+                if(arrowKeyListening[3]) arrowKeyMarket[3].put(Direction.SOUTH);
             } else if (command.equals(arrowKeyCommands[5])) {
                 x_1--;
-                if(arrowKeyListening) arrowKeyMarket[2].put(x_1);
+                if(arrowKeyListening[2]) arrowKeyMarket[2].put(Direction.EAST);
             } else if (command.equals(arrowKeyCommands[6])) {
                 y_1--;
-                if(arrowKeyListening) arrowKeyMarket[3].put(y_1);
+                if(arrowKeyListening[3]) arrowKeyMarket[3].put(Direction.NORTH);
             } else if (command.equals(arrowKeyCommands[7])) {
                 x_1++;
-                if(arrowKeyListening) arrowKeyMarket[2].put(x_1);
+                if(arrowKeyListening[2]) arrowKeyMarket[2].put(Direction.WEST);
             }
             
             repaint();
@@ -352,10 +358,13 @@ public class ConsoleUI extends javax.swing.JFrame {
     public String getNextEnter() throws InterruptedException {
         /*int prevEnter = enter;
         while(prevEnter == enter) {
-            Thread.sleep(100);
+        Thread.sleep(100);
         }
         return "Go!";*/
-        return contentPane.enterKeyMarket.get();
+        contentPane.enterKeyListening = true;
+        String get = contentPane.enterKeyMarket.get();
+        contentPane.enterKeyListening = false;
+        return get;
     }
     
     public String getNextButtonEnter() throws InterruptedException {
@@ -370,18 +379,29 @@ public class ConsoleUI extends javax.swing.JFrame {
             }
             Thread.sleep(100);
         } while(true);*/
+        contentPane.enterKeyListening = true;
+        buttonListening = true;
+        String output;
         do {
-            if(contentPane.enterKeyMarket.isValSet())
-                return contentPane.enterKeyMarket.get();
-            if(buttonMarket.isValSet()) 
-                return buttonMarket.get();
+            if(contentPane.enterKeyMarket.isValSet()) {
+                output = contentPane.enterKeyMarket.get();
+                break;
+            }
+            if(buttonMarket.isValSet()) {
+                output = buttonMarket.get();
+                break;
+            }
             Thread.sleep(100);
         } while(true);
+        contentPane.enterKeyListening = false;
+        buttonListening = false;
+        return output;
     }
     
     public Direction getNextDirection(int i) throws InterruptedException {
+        Direction output = null;
         if(i == 0) {
-            int prevX_0 = x_0;
+            /*int prevX_0 = x_0;
             int prevY_0 = y_0;
             do {
                 if(prevX_0 != x_0) {
@@ -398,17 +418,24 @@ public class ConsoleUI extends javax.swing.JFrame {
                     }
                 }
                 Thread.sleep(100);
-            } while(true);
-            /*do {
+            } while(true);*/
+            contentPane.arrowKeyListening[0] = true;
+            contentPane.arrowKeyListening[1] = true;
+            do {
                 if(contentPane.arrowKeyMarket[0].isValSet()) {
-                    if(contentPane.arrowKeyMarket[0].get())
-                } else if(contentPane.arrowKeyMarket[1].isValSet()) {
-                    
+                    output = contentPane.arrowKeyMarket[0].get();
+                    break;
+                }
+                if(contentPane.arrowKeyMarket[1].isValSet()) {
+                    output = contentPane.arrowKeyMarket[1].get();
+                    break;
                 }
                 Thread.sleep(100);
-            } while(true);*/
+            } while(true);
+            contentPane.arrowKeyListening[0] = false;
+            contentPane.arrowKeyListening[1] = false;
         } else if(i == 1) {
-            int prevX_1 = x_1;
+            /*int prevX_1 = x_1;
             int prevY_1 = y_1;
             do {
                 if(prevX_1 != x_1) {
@@ -425,13 +452,28 @@ public class ConsoleUI extends javax.swing.JFrame {
                     }
                 }
                 Thread.sleep(100);
+            } while(true);*/
+            contentPane.arrowKeyListening[2] = true;
+            contentPane.arrowKeyListening[3] = true;
+            do {
+                if(contentPane.arrowKeyMarket[2].isValSet()) {
+                    output = contentPane.arrowKeyMarket[2].get();
+                    break;
+                }
+                if(contentPane.arrowKeyMarket[3].isValSet()) {
+                    output = contentPane.arrowKeyMarket[3].get();
+                    break;
+                }
+                Thread.sleep(100);
             } while(true);
+            contentPane.arrowKeyListening[2] = false;
+            contentPane.arrowKeyListening[3] = false;
         }
-        return null;
+        return output;
     }
     
     public Direction getNextLeftRightEnter() throws InterruptedException {
-        int prevX_0 = x_0, prevEnter = enter;
+        /*int prevX_0 = x_0, prevEnter = enter;
         do {
             if(prevX_0 != x_0) {
                 if(prevX_0 < x_0) {
@@ -442,13 +484,23 @@ public class ConsoleUI extends javax.swing.JFrame {
             }
             if(prevEnter != enter) return Direction.SOUTH;
             Thread.sleep(100);
+        } while(true);*/
+        Direction output = null;
+        contentPane.arrowKeyListening[0] = true;
+        do {
+            if(contentPane.arrowKeyMarket[0].isValSet()) {
+                output = contentPane.arrowKeyMarket[0].get();
+                break;
+            }
         } while(true);
+        contentPane.arrowKeyListening[0] = false;
+        return output;
     }
     
     public String getNextGamePageNavigator(int i) throws InterruptedException {
-        int prevBack = backspace, prevEnter = enter;
+        //int prevBack = backspace, prevEnter = enter;
         if(i == 0) {
-            int prevX_0 = x_0;
+            /*int prevX_0 = x_0;
             do {
                 if(prevX_0 != x_0) {
                     if(prevX_0 < x_0) {
@@ -468,9 +520,41 @@ public class ConsoleUI extends javax.swing.JFrame {
                     return lastButtonName;
                 }
                 Thread.sleep(100);
+            } while(true);*/
+            do {
+                if(contentPane.arrowKeyMarket[0].isValSet()) {
+                    Direction d =  contentPane.arrowKeyMarket[0].get();
+                    return (d == Direction.EAST)?">":"<";
+                }
+                if(contentPane.backspaceKeyMarket.isValSet()) {
+                    return contentPane.backspaceKeyMarket.get();
+                }
+                if(contentPane.enterKeyMarket.isValSet()) {
+                    return contentPane.enterKeyMarket.get();
+                }
+                if(buttonMarket.isValSet()) {
+                    return buttonMarket.get();
+                }
+                Thread.sleep(100);
             } while(true);
         } else if(i == 1) {
-            int prevX_1 = x_1;
+            do {
+                if(contentPane.arrowKeyMarket[2].isValSet()) {
+                    Direction d =  contentPane.arrowKeyMarket[0].get();
+                    return (d == Direction.EAST)?">":"<";
+                }
+                if(contentPane.backspaceKeyMarket.isValSet()) {
+                    return contentPane.backspaceKeyMarket.get();
+                }
+                if(contentPane.enterKeyMarket.isValSet()) {
+                    return contentPane.enterKeyMarket.get();
+                }
+                if(buttonMarket.isValSet()) {
+                    return buttonMarket.get();
+                }
+                Thread.sleep(100);
+            } while(true);
+            /*int prevX_1 = x_1;
             do {
                 if(prevX_1 != x_1) {
                     if(prevX_1 < x_1) {
@@ -490,7 +574,7 @@ public class ConsoleUI extends javax.swing.JFrame {
                     return lastButtonName;
                 }
                 Thread.sleep(100);
-            } while(true);
+            } while(true);*/
         }
         return null;
     }
@@ -498,14 +582,17 @@ public class ConsoleUI extends javax.swing.JFrame {
     public String getNextKeyboardPress() throws InterruptedException {
         /*HashMap<String, Integer> copy = new HashMap<>(contentPane.getKeyboardCommands());
         do {
-            if(!copy.equals(contentPane.getKeyboardCommands())) {
-                for(String s:copy.keySet()) {
-                    if(!copy.get(s).equals(contentPane.getKeyboardCommands().get(s))) return s;
-                }
-            }
-            Thread.sleep(10);
+        if(!copy.equals(contentPane.getKeyboardCommands())) {
+        for(String s:copy.keySet()) {
+        if(!copy.get(s).equals(contentPane.getKeyboardCommands().get(s))) return s;
+        }
+        }
+        Thread.sleep(10);
         } while(true);*/
-        return contentPane.keyBoardMarket.get();
+        contentPane.keyBoardListening = true;
+        String get = contentPane.keyBoardMarket.get();
+        contentPane.keyBoardListening = false;
+        return get;
     }
 
     public void setLCD(LCD lcd1) {
