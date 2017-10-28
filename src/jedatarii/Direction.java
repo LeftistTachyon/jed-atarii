@@ -10,30 +10,32 @@ public enum Direction {
     }
 
     public static Direction fromString(String s) {
-        if(s.equalsIgnoreCase("up")) {
-            return NORTH;
-        } else if(s.equalsIgnoreCase("down")) {
-            return SOUTH;
-        } else if(s.equalsIgnoreCase("left")) {
-            return WEST;
-        } else if(s.equalsIgnoreCase("right")) {
-            return EAST;
-        } else {
-            return null;
+        switch(s.toLowerCase()) {
+            case "up":
+                return NORTH;
+            case "down":
+                return SOUTH;
+            case "left":
+                return WEST;
+            case "right":
+                return EAST;
+            default:
+                return null;
         }
     }
 
     public static Direction relativeString(String s) {
-        if(s.equalsIgnoreCase("forward")) {
-            return NORTH;
-        } else if(s.equalsIgnoreCase("backward")) {
-            return SOUTH;
-        } else if(s.equalsIgnoreCase("left")) {
-            return WEST;
-        } else if(s.equalsIgnoreCase("right")) {
-            return EAST;
-        } else {
-            return null;
+        switch(s.toLowerCase()) {
+            case "forward":
+                return NORTH;
+            case "backward":
+                return SOUTH;
+            case "left":
+                return WEST;
+            case "right":
+                return EAST;
+            default:
+                return null;
         }
     }
 

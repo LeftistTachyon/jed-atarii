@@ -487,13 +487,20 @@ public class ConsoleUI extends javax.swing.JFrame {
         } while(true);*/
         Direction output = null;
         contentPane.arrowKeyListening[0] = true;
+        contentPane.enterKeyListening = true;
         do {
             if(contentPane.arrowKeyMarket[0].isValSet()) {
                 output = contentPane.arrowKeyMarket[0].get();
                 break;
             }
+            if(contentPane.enterKeyMarket.isValSet()) {
+                contentPane.enterKeyMarket.get();
+                output = Direction.SOUTH;
+                break;
+            }
         } while(true);
         contentPane.arrowKeyListening[0] = false;
+        contentPane.enterKeyListening = false;
         return output;
     }
     
