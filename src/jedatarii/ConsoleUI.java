@@ -469,7 +469,7 @@ public class ConsoleUI extends javax.swing.JFrame {
             contentPane.arrowKeyListening[2] = false;
             contentPane.arrowKeyListening[3] = false;
         }
-        return output;
+        return output.rotate(180);
     }
     
     public Direction getNextLeftRightEnter() throws InterruptedException {
@@ -499,6 +499,7 @@ public class ConsoleUI extends javax.swing.JFrame {
     
     public String getNextGamePageNavigator(int i) throws InterruptedException {
         //int prevBack = backspace, prevEnter = enter;
+        String output = "";
         if(i == 0) {
             /*int prevX_0 = x_0;
             do {
@@ -521,39 +522,63 @@ public class ConsoleUI extends javax.swing.JFrame {
                 }
                 Thread.sleep(100);
             } while(true);*/
+            contentPane.arrowKeyListening[0] = true;
+            contentPane.backspaceListening = true;
+            contentPane.enterKeyListening = true;
+            buttonListening = true;
             do {
                 if(contentPane.arrowKeyMarket[0].isValSet()) {
                     Direction d =  contentPane.arrowKeyMarket[0].get();
-                    return (d == Direction.EAST)?">":"<";
+                    output = (d == Direction.EAST)?"<":">";
+                    break;
                 }
                 if(contentPane.backspaceKeyMarket.isValSet()) {
-                    return contentPane.backspaceKeyMarket.get();
+                    output = contentPane.backspaceKeyMarket.get();
+                    break;
                 }
                 if(contentPane.enterKeyMarket.isValSet()) {
-                    return contentPane.enterKeyMarket.get();
+                    output = contentPane.enterKeyMarket.get();
+                    break;
                 }
                 if(buttonMarket.isValSet()) {
-                    return buttonMarket.get();
+                    output = buttonMarket.get();
+                    break;
                 }
                 Thread.sleep(100);
             } while(true);
+            contentPane.backspaceListening = false;
+            contentPane.enterKeyListening = false;
+            buttonListening = false;
+            contentPane.arrowKeyListening[0] = false;
         } else if(i == 1) {
+            contentPane.arrowKeyListening[2] = true;
+            contentPane.backspaceListening = true;
+            contentPane.enterKeyListening = true;
+            buttonListening = true;
             do {
                 if(contentPane.arrowKeyMarket[2].isValSet()) {
                     Direction d =  contentPane.arrowKeyMarket[0].get();
-                    return (d == Direction.EAST)?">":"<";
+                    output = (d == Direction.EAST)?"<":">";
+                    break;
                 }
                 if(contentPane.backspaceKeyMarket.isValSet()) {
-                    return contentPane.backspaceKeyMarket.get();
+                    output = contentPane.backspaceKeyMarket.get();
+                    break;
                 }
                 if(contentPane.enterKeyMarket.isValSet()) {
-                    return contentPane.enterKeyMarket.get();
+                    output = contentPane.enterKeyMarket.get();
+                    break;
                 }
                 if(buttonMarket.isValSet()) {
-                    return buttonMarket.get();
+                    output = buttonMarket.get();
+                    break;
                 }
                 Thread.sleep(100);
             } while(true);
+            contentPane.backspaceListening = false;
+            contentPane.enterKeyListening = false;
+            buttonListening = false;
+            contentPane.arrowKeyListening[2] = false;
             /*int prevX_1 = x_1;
             do {
                 if(prevX_1 != x_1) {
@@ -576,7 +601,7 @@ public class ConsoleUI extends javax.swing.JFrame {
                 Thread.sleep(100);
             } while(true);*/
         }
-        return null;
+        return output;
     }
     
     public String getNextKeyboardPress() throws InterruptedException {
