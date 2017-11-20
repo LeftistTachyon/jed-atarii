@@ -8,3 +8,4 @@ _Connect 4_
 _Maze (solving a Maze)_  
 _Wild West Showdown (a reaction game)_  
 _Pong_  
+_Typist_  
